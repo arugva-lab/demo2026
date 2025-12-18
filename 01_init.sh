@@ -82,10 +82,10 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 
 useradd -m -s /bin/bash '$USER_ADMIN'
-echo "'$USER_ADMIN':'$PASS' | chpasswd
+echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
 '
-vm exec $ID_HQ_RTR "CMD_HQ_RTR" "HQ-RTR"
+vm_exec $ID_HQ_RTR "$CMD_HQ_RTR" "HQ-RTR"
 
 #  --- BR-RTR ---
 CMD_BR_RTR='
@@ -119,13 +119,17 @@ vm_exec $ID_BR_RTR "$CMD_BR_RTR" "BR-RTR"
 CMD_HQ_SRV='
 hostnamectl set-hostname hq-srv.au-team.irpo
 timedatectl set-timezone '$TIMEZONE'
-mkdir -p /etc/net/ifaces/'$HQ_SRV_IF'
+mkdir -p /etc/net/ifaces/'$HQ_SRV_IF'.100
 echo "TYPE=eth" > /etc/net/ifaces/'$HQ_SRV_IF'/options
 echo "DISABLED=no" >> /etc/net/ifaces/'$HQ_SRV_IF'/options
-echo "ONBOOT=yes" >> /etc/net/ifaces/'$HQ_SRV_IF'
+echo "ONBOOT=yes" >> /etc/net/ifaces/'$HQ_SRV_IF'/options
 echo "BOOTPROTO=static" >> /etc/net/ifaces/'$HQ_SRV_IF'/options
-echo "192.168.1.2/27" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4address
-echo "192.168.1.1" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4route
+echo "TYPE=vlan" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/options
+echo "DISABLED=no" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/options
+echo "HOST='$HQ_SRV_IF'" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/options
+echo "VID=100" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/options
+echo "192.168.1.2/27" > /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4address
+echo "192.168.1.1" > /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4route
 systemctl restart network
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
