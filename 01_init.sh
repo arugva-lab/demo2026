@@ -4,9 +4,8 @@
 source ./env.sh
 source ./lib.sh
 
-echo ">>> ЗАПУСК МОДУЛЯ 1 (Astra + Alt Linux) <<<"
+echo ">>> Module <<<"
 
-#ЧАСТЬ 1: ASTRA LINUX (Роутеры ISP, HQ-RTR, BR-RTR)
 #   --- 1.1 ISP (Astra) ---
 CMD_ISP_NET='
 hostnamectl set-hostname ISP
@@ -36,8 +35,8 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
 # NAT
 iptables -t nat -A POSTROUTING -o '$ISP_IF_WAN' -j MASQUERADE
-apt-get install -y iptables-persistent 2>/dev/null
-netfilter-persistent save
+touch /etc/iptables.rules
+iptables-save >> /etc/iptables.rules
 
 systemctl restart networking
 '
@@ -48,8 +47,8 @@ echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
 '
 
-vm_exec $ID_ISP "$CMD_ISP_NET" "Настройка сети ISP (Astra)"
-vm_exec $ID_ISP "$CMD_ISP_USER" "Создание админа на ISP"
+vm_exec $ID_ISP "$CMD_ISP_NET" "network ISP (Astra)"
+vm_exec $ID_ISP "$CMD_ISP_USER" "create admin ISP"
 
 
 # --- 1.2 HQ-RTR (Astra) ---
@@ -75,29 +74,33 @@ iface '$HQ_IF_LAN' inet manual
 # VLANs
 auto '$HQ_IF_LAN'.100
 iface '$HQ_IF_LAN'.100 inet static
-    address 10.10.10.1/27
+    address 192.168.1.1/27
     vlan-raw-device '$HQ_IF_LAN'
 
 auto '$HQ_IF_LAN'.200
 iface '$HQ_IF_LAN'.200 inet static
-    address 10.10.20.1/27
+    address 192.168.2.1/27
     vlan-raw-device '$HQ_IF_LAN'
 
 auto '$HQ_IF_LAN'.999
 iface '$HQ_IF_LAN'.999 inet static
-    address 10.10.99.1/29
+    address 192.168.99.1/29
     vlan-raw-device '$HQ_IF_LAN'
 EOF
 
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
+
+useradd -m -s /bin/bash '$USER_ADMIN'
+echo "'$USER_ADMIN':'$PASS'" | chpasswd
+echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
 '
-# (Юзера добавляем так же, опустим для краткости, он стандартный)
-vm_exec $ID_HQ_RTR "$CMD_HQ_RTR" "Настройка HQ-RTR (Astra)"
+
+vm_exec $ID_HQ_RTR "$CMD_HQ_RTR" "HQ-RTR"
 
 
-# --- 1.3 BR-RTR (Astra) ---
+# --- 1.3 BR-RTR ---
 CMD_BR_RTR='
 hostnamectl set-hostname BR-RTR
 timedatectl set-timezone '$TIMEZONE'
@@ -113,59 +116,43 @@ iface '$BR_IF_WAN' inet static
 
 auto '$BR_IF_LAN'
 iface '$BR_IF_LAN' inet static
-    address 10.20.10.1/28
+    address 192.168.3.1/28
 EOF
 
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 '
-vm_exec $ID_BR_RTR "$CMD_BR_RTR" "Настройка BR-RTR (Astra)"
+vm_exec $ID_BR_RTR "$CMD_BR_RTR" "BR-RTR"
 
 
-#   --- 2.1 HQ-SRV (Alt Server) ---
-# Настройка статики через Etcnet
+#   --- 2.1 HQ-SRV ---
 CMD_HQ_SRV='
 hostnamectl set-hostname HQ-SRV
 timedatectl set-timezone '$TIMEZONE'
-
-# 1. Создаем папку интерфейса
 mkdir -p /etc/net/ifaces/'$HQ_SRV_IF'
-
-# 2. Файл options (Тип и режим загрузки)
-echo "TYPE=eth" > /etc/net/ifaces/'$HQ_SRV_IF'/options
+echo "TYPE=eth\n DISABLE=no\n ONBOOT=yes\n" > /etc/net/ifaces/'$HQ_SRV_IF'/options
 echo "BOOTPROTO=static" >> /etc/net/ifaces/'$HQ_SRV_IF'/options
-
-# 3. Файл ipv4address (IP/Mask)
-echo "10.10.10.10/27" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4address
-
-# 4. Файл ipv4route (Шлюз по умолчанию)
-echo "default via 10.10.10.1" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4route
-
-# 5. Применяем настройки (в Alt это сервис network)
+echo "192.168.1.2/27" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4address
+echo "192.168.1.1" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4route
 systemctl restart network
-
-# Настройка пользователя sshuser (Alt)
-# Группа sudo в Alt может называться wheel, но мы даем права через файл в sudoers.d
+# Настройка пользователя sshuser
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
-# Создаем файл sudoers (в Alt путь такой же)
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
 '
-
 vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "Настройка HQ-SRV (Alt Linux)"
 
 
-# --- 2.2 BR-SRV (Alt Server) ---
+# --- 2.2 BR-SRV---
 CMD_BR_SRV='
 hostnamectl set-hostname BR-SRV
 timedatectl set-timezone '$TIMEZONE'
-
 mkdir -p /etc/net/ifaces/'$BR_SRV_IF'
 echo "TYPE=eth" > /etc/net/ifaces/'$BR_SRV_IF'/options
-echo "BOOTPROTO=static" >> /etc/net/ifaces/'$BR_SRV_IF'/options
-echo "10.20.10.10/28" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4address
-echo "default via 10.20.10.1" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4route
+echo "BOOTPROTO=static\n ONBOOT=yes\n DISABLE=no" >> /etc/net/ifaces/'$BR_SRV_IF'/options
+echo "192.168.3.2/28" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4address
+echo "192.168.3.1" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4route
 
 systemctl restart network
 
@@ -174,34 +161,21 @@ echo "'$USER_SSH':'$PASS'" | chpasswd
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
 '
 
-vm_exec $ID_BR_SRV "$CMD_BR_SRV" "Настройка BR-SRV (Alt Linux)"
+vm_exec $ID_BR_SRV "$CMD_BR_SRV" "BR-SRV"
 
+# --- 3.1 HQ-CLI ---
 
-# ==============================================================================
-# ЧАСТЬ 3: ALT LINUX WORKSTATION (Клиент HQ-CLI)
-# Используем /etc/net/ifaces (DHCP Client)
-# ==============================================================================
-
-# --- 3.1 HQ-CLI (Alt Workstation) ---
-# Задание требует получения IP по DHCP (когда поднимем DHCP на роутере)
 CMD_HQ_CLI='
 hostnamectl set-hostname HQ-CLI-01
 timedatectl set-timezone '$TIMEZONE'
-
 mkdir -p /etc/net/ifaces/'$HQ_CLI_IF'
-
-# Для DHCP нужны только options
 echo "TYPE=eth" > /etc/net/ifaces/'$HQ_CLI_IF'/options
-echo "BOOTPROTO=dhcp" >> /etc/net/ifaces/'$HQ_CLI_IF'/options
-
-# Удаляем статику если была
-rm -f /etc/net/ifaces/'$HQ_CLI_IF'/ipv4address
-rm -f /etc/net/ifaces/'$HQ_CLI_IF'/ipv4route
+echo "BOOTPROTO=dhcp\n ONBOOT=yes\n DISABLE=no" >> /etc/net/ifaces/'$HQ_CLI_IF'/options
 
 systemctl restart network
 '
 
-vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "Настройка HQ-CLI (Alt DHCP)"
+vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "HQ-CLI"
 
 
-echo ">>> ✅ МОДУЛЬ 1 ГОТОВ (Сеть настроена на Astra и Alt) <<<"
+echo ">>> MODULE 1 COMPLETE <<<"
