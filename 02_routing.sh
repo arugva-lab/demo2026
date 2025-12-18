@@ -31,6 +31,7 @@ iface gre1 inet static
     address 10.10.10.2
     netmask 255.255.255.252
     pre-up ip tunnel add gre1 mode gre remote 172.16.1.2 local 172.16.2.2 ttl 255
+    up ip link set gre1 up
     post-down ip tunnel del gre1
 EOF
 ifup gre1
@@ -87,9 +88,8 @@ echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64 classic gostc
 echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64-i586 classic' >> /etc/apt/sources.list.d/demo2026.list
 echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/noarch classic' >> /etc/apt/sources.list.d/demo2026.list
 apt-get update && apt-get install bind bind-utils -y
-sed -i 's/listen-on { 127.0.0.1; };/listen-on { any; };/' /etc/bind/named.conf
-sed -i 's/allow-query     { localhost; };/allow-query     { any; };/' /etc/bind/named.conf
-sed -i '/recursion yes;/a \        forwarders { 8.8.8.8; };' /etc/bind/named.conf
+sed -i 's/listen-on { 127.0.0.1; };/listen-on { any; };/' /etc/bind/options.conf
+sed -i 's/allow-query     { localhost; };/allow-query     { any; };/' /etc/bind/options.conf
 
 cat >> /etc/bind/local.conf <<'EOF'
 
@@ -155,6 +155,9 @@ EOF
 chown root:named /etc/bind/db.au-team.irpo
 chown root:named /etc/bind/db.1.168.192.in-addr.arpa
 chown root:named /etc/bind/db.2.168.192.in-addr.arpa
+chmod 640 /etc/bind/db.au-team.irpo
+chmod 640 /etc/bind/db.1.168.192.in-addr.arpa
+chmod 640 /etc/bind/db.2.168.192.in-addr.arpa
 systemctl enable --now bind
 systemctl restart bind
 "
