@@ -30,7 +30,7 @@ auto gre1
 iface gre1 inet static
     address 10.10.10.2
     netmask 255.255.255.252
-    pre-ip ip tunnel add gre1 mode gre remote 172.16.1.2 local 172.16.2.2 ttl 255
+    pre-up ip tunnel add gre1 mode gre remote 172.16.1.2 local 172.16.2.2 ttl 255
     post-down ip tunnel del gre1
 EOF
 ifup gre1
@@ -93,17 +93,17 @@ sed -i '/recursion yes;/a \        forwarders { 8.8.8.8; };' /etc/bind/named.con
 
 cat >> /etc/bind/local.conf <<'EOF'
 
-zone "au-team.irpo" {
+zone \"au-team.irpo\" {
     type master;
-    file "/etc/bind/db.au-team.irpo";
+    file \"/etc/bind/db.au-team.irpo\";
 };
-zone "1.168.192.in-addr.arpa" {
+zone \"1.168.192.in-addr.arpa\" {
     type master;
-    file "/etc/bind/db.1.168.192.in-addr.arpa";
+    file \"/etc/bind/db.1.168.192.in-addr.arpa\";
 };
-zone "2.168.192.in-addr.arpa" {
+zone \"2.168.192.in-addr.arpa\" {
     type master;
-    file "/etc/bind/db.2.168.192.in-addr.arpa";
+    file \"/etc/bind/db.2.168.192.in-addr.arpa\";
 };
 EOF
 touch /etc/bind/db.au-team.irpo
@@ -153,6 +153,8 @@ cat > /etc/bind/db.2.168.192.in-addr.arpa <<'EOF'
 2       IN  PTR     hq-cli.au-team.irpo.
 EOF
 chown root:named /etc/bind/db.au-team.irpo
+chown root:named /etc/bind/db.1.168.192.in-addr.arpa
+chown root:named /etc/bind/db.2.168.192.in-addr.arpa
 systemctl enable --now bind
 systemctl restart bind
 "
