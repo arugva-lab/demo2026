@@ -6,7 +6,7 @@ vm_exec() {
     echo "[$VMID] $DESC..."
     
     if ! qm agent $VMID ping >/dev/null 2>&1; then
-        echo "⚠️  [SKIP] Агент на VM $VMID недоступен!"
+        echo " AGENT IS NOT AVAILABLE AT $VMID"
         return
     fi
 
