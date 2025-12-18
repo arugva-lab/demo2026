@@ -156,5 +156,5 @@ chown root:named /etc/bind/db.au-team.irpo
 systemctl enable --now bind
 systemctl restart bind
 "
-vm_exec $ID_HQ_SRV "$DNS_HQ_SRV" "DNS server at HQ-SRV"
+vm_exec $ID_HQ_SRV "$DNS_HQ_SRV" "DNS server HQ-SRV"
 echo " MODULE 1-02 COMPLETE"
