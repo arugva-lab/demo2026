@@ -110,7 +110,7 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 
 useradd -m -s /bin/bash '$USER_ADMIN'
-echo "'$USER_ADMIN':'PASS'" | chpasswd
+echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
 '
 vm_exec $ID_BR_RTR "$CMD_BR_RTR" "BR-RTR"
