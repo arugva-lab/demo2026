@@ -10,7 +10,7 @@ vm_exec() {
         return
     fi
 
-    # Добавляем LC_ALL=C в начало команды, чтобы ошибки были на английском
+    # english error
     local FULL_CMD="export LC_ALL=C; $CMD"
     local B64_CMD=$(echo "$FULL_CMD" | base64 -w0)
     local WRAPPER="echo $B64_CMD | base64 -d | /bin/bash"
