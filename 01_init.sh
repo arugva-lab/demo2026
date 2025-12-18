@@ -80,7 +80,9 @@ EOF
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
-
+iptables -t nat -A POSTROUTING -o '$HQ_IF_WAN' -j MASQUERADE
+touch /etc/iptables.rules
+iptables-save >> /etc/iptables.rules
 useradd -m -s /bin/bash '$USER_ADMIN'
 echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
@@ -108,7 +110,9 @@ EOF
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
-
+iptables -t nat -A POSTROUTING -o '$BR_IF_WAN' -j MASQUERADE
+touch /etc/iptables.rules
+iptables-save >> /etc/iptables.rules
 useradd -m -s /bin/bash '$USER_ADMIN'
 echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
@@ -141,11 +145,18 @@ EOF
 cat << EOF >  /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4route
 192.168.1.1
 EOF
-ip r add default via 192.168.1.1
-systemctl restart network
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
+
+systemctl disable --now systemd-resolved.service
+sed -i 's/127.0.0.53//' /etc/resolvconf.conf
+touch /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
+echo "namserver 192.168.1.2" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
+systemctl restart network
+resolvconf -u
+ip r add default via 192.168.1.1
 '
 vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "HQ-SRV"
 
@@ -163,13 +174,17 @@ DISABLED=no
 eof
 echo  "192.168.3.2/28" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4address
 echo  "192.168.3.1" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4route
-
+sed -i 's/127.0.0.53//' /etc/resolvconf.conf
+touch /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
+echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 systemctl restart network
-
+resolvconf -u
+ip r add default via 192.168.3.1
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
-echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
-'
+echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH''
+
 
 vm_exec $ID_BR_SRV "$CMD_BR_SRV" "BR-SRV"
 
