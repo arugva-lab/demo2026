@@ -53,21 +53,21 @@ cat > /etc/network/interfaces <<EOF
 auto lo
 iface lo inet loopback
 
-auto 'HQ_IF_WAN'
-iface 'HQ_IF_WAN' inet static
+auto '$HQ_IF_WAN'
+iface '$HQ_IF_WAN' inet static
 	address 172.16.1.2/28
 	gateway 172.16.1.1
 
-auto 'HQ_IF_LAN'
+auto '$HQ_IF_LAN'
 iface '$HQ_IF_LAN' inet manual
 
-auto 'HQ_IF_LAN'.100
-iface 'HQ_IF_LAN'.100 inet static
+auto '$HQ_IF_LAN'.100
+iface '$HQ_IF_LAN'.100 inet static
 	address 192.168.1.1/27
-	vlan-raw-device 'HQ_IF_LAN'
+	vlan-raw-device '$HQ_IF_LAN'
 
-auto 'HQ_IF_LAN'.200
-iface 'HQ_IF_LAN'.200 inet static
+auto '$HQ_IF_LAN'.200
+iface '$HQ_IF_LAN'.200 inet static
 	address 192.168.2.1/27
 	vlan-raw-device '$HQ_IF_LAN'
 
@@ -95,13 +95,13 @@ cat > /etc/network/interfaces <<EOF
 auto lo
 iface lo inet loopback
 
-auto 'BR_IF_WAN'
+auto '$BR_IF_WAN'
 iface '$BR_IF_WAN' inet static
 	address 172.16.2.2/28
 	gateway 172.16.2.1
 
-auto 'BR_IF_LAN'
-iface 'BR_IF_LAN' inet static
+auto '$BR_IF_LAN'
+iface '$BR_IF_LAN' inet static
 	address 192.168.3.1/28
 EOF
 
@@ -109,7 +109,7 @@ sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 
-useradd -m -s /bin/bash 'USER_ADMIN'
+useradd -m -s /bin/bash '$USER_ADMIN'
 echo "'$USER_ADMIN':'PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
 '
@@ -121,8 +121,8 @@ hostnamectl set-hostname hq-srv.au-team.irpo
 timedatectl set-timezone '$TIMEZONE'
 mkdir -p /etc/net/ifaces/'$HQ_SRV_IF'
 echo "TYPE=eth" > /etc/net/ifaces/'$HQ_SRV_IF'/options
-echo "DISABLED=no" >> /etc/net/ifaces/'HQ_SRV_IF'/options
-echo "ONBOOT=yes" >> /etc/net/ifaces/'HQ_SRV_IF'
+echo "DISABLED=no" >> /etc/net/ifaces/'$HQ_SRV_IF'/options
+echo "ONBOOT=yes" >> /etc/net/ifaces/'$HQ_SRV_IF'
 echo "BOOTPROTO=static" >> /etc/net/ifaces/'$HQ_SRV_IF'/options
 echo "192.168.1.2/27" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4address
 echo "192.168.1.1" > /etc/net/ifaces/'$HQ_SRV_IF'/ipv4route
@@ -131,7 +131,7 @@ useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
 '
-vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "Настройка HQ-SRV (Alt Linux)"
+vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "HQ-SRV"
 
 
 # --- 2.2 BR-SRV---
