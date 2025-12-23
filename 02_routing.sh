@@ -6,39 +6,39 @@ source ./lib.sh
 # --- HQ-RTR ---
 
 # GRE
-CMD_HQ_RTR='
+GRE_HQ_RTR='
 cat >> /etc/network/interfaces << EOF
 
-auto gre0
-iface gre0 inet static
+auto gre1
+iface gre1 inet static
     address 10.10.10.1
     netmask 255.255.255.252
     mode gre
     endpoint 172.16.2.2
-    "local" 172.16.1.2
+    local 172.16.1.2
     ttl 255
 EOF
-ifup gre0
+ifup gre1
 
 # NAT 
 iptables -t nat -A POSTROUTING -o '$HQ_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save > /etc/iptables.rules
 '
-vm_exec $ID_HQ_RTR "$CMD_HQ_RTR" "GRE & NAT on HQ-RTR"
+vm_exec $ID_HQ_RTR "$GRE_HQ_RTR" "GRE & NAT on HQ-RTR"
 
 # --- BR-RTR ---
 
-CMD_BR_RTR='
+GRE_BR_RTR='
 #GRE
 cat >> /etc/network/interfaces << EOF
-auto gre0
-iface gre0 inet static
+auto gre1
+iface gre1 inet static
     address 10.10.10.2
     netmask 255.255.255.252
     mode gre
     endpoint 172.16.1.2
-    "local" 172.16.2.2
+    local 172.16.2.2
     ttl 255
 EOF
 
@@ -49,7 +49,7 @@ iptables -t nat -A POSTROUTING -o '$BR_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save > /etc/iptables.rules
 '
-vm_exec $ID_BR_RTR "$CMD_BR_RTR"  "GRE & NAT on BR-RTR"
+vm_exec $ID_BR_RTR "$GRE_BR_RTR"  "GRE & NAT on BR-RTR"
 
 #FRR ON BR-RTR & HQ-RTR
 CMD_FRR='
@@ -99,12 +99,12 @@ setup_frr $ID_BR_RTR "2.2.2.2" "$BR_LAN_NET"
 
 # 4. DHCP ON HQ-RTR (VLAN 200)
 
-CMD_FRR='
-cat > tmp_dhcp.sh <<EOF
-apt-get install -y isc-dhcp-server
-sed -i 's/INTERFACESv4=""/INTERFACESv4="eth1.200"/' /etc/default/isc-dhcp-server
-
-cat >> /etc/dhcp/dhcpd.conf <<EOT
+DHCP_HQ_RTR='
+apt-get update && apt-get install -y isc-dhcp-server
+sed -i 's/INTERFACESv4=""/INTERFACESv4="'$HQ_IF_LAN'.200"/' /etc/default/isc-dhcp-server
+rm -f /etc/dhcp/dhcpd.conf
+touch /etc/dhcp/dhcpd.conf
+cat >> /etc/dhcp/dhcpd.conf <<EOF
 option domain-name "au-team.irpo";
 option domain-name-servers 192.168.1.2;
 default-lease-time 600;
@@ -114,30 +114,39 @@ subnet 192.168.2.0 netmask 255.255.255.224 {
   range 192.168.2.2 192.168.2.30;
   option routers 192.168.2.1;
 }
-EOT
-systemctl restart isc-dhcp-server
 EOF
+systemctl restart isc-dhcp-server
 '
-vm_exec $ID_HQ_RTR "$CMD_FRR" "DHCP server at HQ-RTR"
+vm_exec $ID_HQ_RTR "DHCP_HQ_RTR" "DHCP server at HQ-RTR"
 
 # 5. DNS AT HQ-SRV
-CMD_DNS_HQ_SRV='
-cat > tmp_dns.sh <<EOF
+DNS_HQ_SRV='
+echo "rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64 classic gostcrypto" >> /etc/apt/sources.list.d/demo2026.list
+echo "rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64-i586 classic" >> /etc/apt/sources.list.d/demo2026.list
+echo "rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/noarch classic" >> /etc/apt/sources.list.d/demo2026.list
 apt-get update && apt-get install bind bind-utils -y
 sed -i 's/listen-on { 127.0.0.1; };/listen-on { any; };/' /etc/bind/named.conf
 sed -i 's/allow-query     { localhost; };/allow-query     { any; };/' /etc/bind/named.conf
 sed -i '/recursion yes;/a \        forwarders { 8.8.8.8; };' /etc/bind/named.conf
 
-cat >> /etc/bind/named.conf <<EOT
+cat >> /etc/bind/local.conf <<EOF
 
-zone "au-team.irpo" IN {
+zone "au-team.irpo" {
     type master;
-    file "master/au-team.irpo.zone";
+    file "/etc/bind/db.au-team.irpo";
 };
-EOT
-mkdir -p /var/lib/bind/master
-cat > /var/lib/bind/master/au-team.irpo.zone <<EOT
-\$TTL 86400
+zone "1.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.1.168.192.in-addr.arpa";
+};
+zone "2.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.2.168.192.in-addr.arpa";
+};
+EOF
+touch /etc/bind/db.au-team.irpo
+cat > /etc/bind/db.au-team.irpo <<EOF
+$TTL 86400
 @   IN  SOA ns.au-team.irpo. admin.au-team.irpo. (
             2023101001 ; Serial
             3600       ; Refresh
@@ -157,11 +166,10 @@ docker  IN  A       172.16.2.1
 
 EOT
 
-chown root:named /var/lib/bind/master/au-team.irpo.zone
-systemctl enable --now named
+chown root:named /etc/bind/db.au-team.irpo
+systemctl enable --now bind
+systemctl restart bind
 EOF
 '
-vm_exec $ID_HQ_SRV "$CMD_DNS_HQ_SRV" "DNS server at HQ-SRV"
-rm tmp_*.sh
-
+vm_exec $ID_HQ_SRV "$DNS_HQ_SRV" "DNS server at HQ-SRV"
 echo " MODULE 1-02 COMPLETE"
