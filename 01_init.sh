@@ -152,7 +152,7 @@ echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
 systemctl disable --now systemd-resolved.service
 sed -i 's/127.0.0.53//' /etc/resolvconf.conf
 touch /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
-echo "namserver 192.168.1.2" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
+echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
 echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
 systemctl restart network
 resolvconf -u
