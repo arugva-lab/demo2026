@@ -141,6 +141,7 @@ EOF
 cat << EOF >  /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4route
 192.168.1.1
 EOF
+ip r add default via 192.168.1.1
 systemctl restart network
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
