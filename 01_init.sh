@@ -208,8 +208,11 @@ DISABLED=no
 VID=200
 HOST='$HQ_CLI_IF'
 EOF
-
+touch /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
+echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
 systemctl restart network
+resolvconf -u
 '
 
 vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "HQ-CLI"
