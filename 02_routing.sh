@@ -39,27 +39,64 @@ ifup gre1
 vm_exec $ID_BR_RTR "$GRE_BR_RTR"  "GRE & NAT on BR-RTR"
 
 #FRR ON BR-RTR & HQ-RTR
-#FRR_HQ_RTR='
-#apt-get update && apt-get install frr -y
-#sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
-#
-#cat >> /etc/frr/frr.conf <<EOF
-#frr defaults traditional
-#hostname $(hostname)
-#log syslog informational
-#!
-#interface gre1
-# ip ospf authentication message-digest
-# ip ospf message-digest-key 1 md5 demo2026key
-#!
-#router ospf
-# ospf router-id 1.1.1.1
-#EOF
-#systemctl restart frr
-#
-#'
-#vm_exec $ID_HQ_RTR "$FRR_HQ_RTR" "FRR at HQ-RTR"
+FRR_HQ_RTR='
+touch /etc/apt/sources.list.d/frr.list
+echo "deb https://deb.frrouting.org/frr stretch frr-8" >> /etc/apt/sources.list.d/frr.list
+apt-get update && apt-get install frr -y --allow-unauthenticated
+sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
+systemctl restart frr
+cat >> /etc/frr/frr.conf <<EOF
+frr version 8.5
+frr defaults traditional
+hostname $(hostname)
+log syslog informational
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+interface gre1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 demo2026
+exit
+!
+router ospf
+ network 10.10.10.0/30 area 0
+ network 192.168.1.0/27 area 0
+ network 192.168.2.0/28 area 0
+exit
+!
+EOF
+systemctl restart frr
+'
+vm_exec $ID_HQ_RTR "$FRR_HQ_RTR" "FRR at HQ-RTR"
 
+FRR_BR_RTR='
+touch /etc/apt/sources.list.d/frr.list
+echo "deb https://deb.frrouting.org/frr stretch frr-8" >> /etc/apt/sources.list.d/frr.list
+apt-get update && apt-get install frr -y --allow-unauthenticated
+sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
+systemctl restart frr
+cat >> /etc/frr/frr.conf <<EOF
+frr version 8.5
+frr defaults traditional
+hostname $(hostname)
+log syslog informational
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+interface gre1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 demo2026
+exit
+!
+router ospf
+ network 10.10.10.0/30 area 0
+ network 192.168.3.0/27 area 0
+exit
+!
+EOF
+systemctl restart frr
+'
+vm_exec $ID_BR_RTR "$FRR_BR_RTR" "FRR at BR-RTR"
 # 4. DHCP ON HQ-RTR (VLAN 200)
 DHCP_HQ_RTR='
 apt-get update && apt-get install -y isc-dhcp-server
