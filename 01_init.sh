@@ -217,5 +217,38 @@ resolvconf -u
 
 vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "HQ-CLI"
 
+#SSH
+CMD_SSH_BR_SRV='
+apt-get install openssh-server
+systemctl daemon-reload
+cat >> /etc/openssh/sshd_config <<EOF
+Port 2026
+MaxAuthTries 2
+PermitRootLogin no
+banner /etc/banner
+AllowUsers sshuser
+EOF
+touch /etc/banner
+echo "Authorized access only" >> /etc/banner
+systemctl restart sshd
+systemctl enable --now sshd
+'
+vm_exec $ID_BR_SRV "$CMD_SSH_BR_SRV" "SSH on BR-SRV"
 
+CMD_SSH_HQ_SRV='
+apt-get install openssh-server
+systemctl daemon-reload
+cat >> /etc/openssh/sshd_config <<EOF
+PORT 2026
+MaxAuthTries 2
+PermitRootLogin no
+banner /etc/banner
+AllowUsers sshuser
+EOF
+touch /etc/banner
+echo "Authorized access only" >> /etc/banner
+systemctl restart sshd
+systemctl enable --now sshd
+'
+vm_exec $ID_HQ_SRV "$CMD_SSH_HQ_SRV" "SSH on HQ-SRV"
 echo ">>> MODULE 1 COMPLETE <<<"
