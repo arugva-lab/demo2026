@@ -25,13 +25,16 @@ iface '$ISP_IF_HQ' inet static
 	address 172.16.1.1/28
 EOF
 
-sysctl -w net.ipv4.ip_forward=1
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-
-#NAT
 iptables -t nat -A POSTROUTING -o '$ISP_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save >> /etc/iptables.rules
+
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
+cat << EOF | crontab -
+@reboot /sbin/sysctl -p
+@reboot /sbin/iptables-restore < /etc/iptables.rules
+EOF
 
 systemctl restart networking
 '
@@ -77,12 +80,17 @@ iface '$HQ_IF_LAN'.999 inet static
    vlan-raw-device '$HQ_IF_LAN'
 EOF
 
-sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$HQ_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save >> /etc/iptables.rules
+
+cat << EOF | crontab -
+@reboot /sbin/sysctl -p
+@reboot /sbin/iptables-restore < /etc/iptables.rules
+EOF
+
 useradd -m -s /bin/bash '$USER_ADMIN'
 echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
@@ -107,12 +115,17 @@ iface '$BR_IF_LAN' inet static
 	address 192.168.3.1/28
 EOF
 
-sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$BR_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save >> /etc/iptables.rules
+
+cat << EOF | crontab -
+@reboot /sbin/sysctl -p
+@reboot /sbin/iptables-restore < /etc/iptables.rules
+EOF
+
 useradd -m -s /bin/bash '$USER_ADMIN'
 echo "'$USER_ADMIN':'$PASS'" | chpasswd
 echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
