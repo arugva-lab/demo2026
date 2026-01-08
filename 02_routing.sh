@@ -162,6 +162,13 @@ br-rtr  IN  A       192.168.3.1
 hq-cli	IN  A       192.168.2.2
 web     IN  A       172.16.1.1
 docker  IN  A       172.16.2.1
+
+;DNS for DC
+_ldap._tcp               600 IN SRV 0 100 389   br-srv
+_kerberos._tcp           600 IN SRV 0 100 88    br-srv
+_kerberos._udp           600 IN SRV 0 100 88    br-srv
+_ldap._tcp.dc._msdcs     600 IN SRV 0 100 389   br-srv
+_ldap._tcp.gc._msdcs     600 IN SRV 0 100 3268  br-srv
 EOF
 touch /etc/bind/db.1.168.192.in-addr.arpa
 cat > /etc/bind/db.1.168.192.in-addr.arpa <<'EOF'
