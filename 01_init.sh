@@ -174,6 +174,7 @@ DISABLED=no
 eof
 echo  "192.168.3.2/28" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4address
 echo  "192.168.3.1" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4route
+systemctl disable --now systemd-resolved.service
 sed -i 's/127.0.0.53//' /etc/resolvconf.conf
 touch /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
