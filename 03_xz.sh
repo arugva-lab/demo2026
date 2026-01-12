@@ -25,7 +25,7 @@ CMD_DC_HQ_CLI='
 echo "P@ssw0rd" | /usr/sbin/realm join -U Administrator AU-TEAM.IRPO
 echo "session		optional	pam_mkhomedir.so skel=/etc/skel umask=0077" >> /etc/pam.d/system-auth
 echo "ad_enable_gc = False" >> /etc/sssd/sssd.conf
-sed -i 's/names = True/names = False/' /etc/sssd/sssd.conf
+sed -i "s/names = True/names = False/" /etc/sssd/sssd.conf
 systemctl restart sssd
 touch /etc/sudoers.d/hq
 echo "%hq       ALL=(ALL) NOPASSWD: /usr/bin/cat, /bin/grep, /usr/bin/id" >> /etc/sudoers.d/hq
