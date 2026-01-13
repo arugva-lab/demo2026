@@ -33,3 +33,24 @@ control sudo public
 '
 
 vm_exec $ID_HQ_CLI "$CMD_DC_HQ_CLI" "test samba"
+
+#File storage
+qm set '$ID_HQ_SRV' --scsi1 local-lvm:1
+qm set '$ID_HQ_SRV' --scsi2 local-lvm:1
+CMD_RAID_HQ_SRV='
+mdadm --create /dev/md0 --level=0 --raid-device=2 /dev/sdb /dev/sdc
+fdisk /dev/md0 << EOF
+N
+P
+
+
+
+w
+EOF
+mkfs.ext4 /dev/md0p1
+mkdir /home/raid
+mount /dev/md0p1 /home/raid
+'
+vm_exec $ID_HQ_SRV "$CMD_RAID_HQ_SRV" "test raid"
+
+
