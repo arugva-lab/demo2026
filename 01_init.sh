@@ -199,6 +199,8 @@ mkdir -p /etc/net/ifaces/'$HQ_CLI_IF'.200
 
 cat << EOF > /etc/net/ifaces/'$HQ_CLI_IF'/options
 DISABLED=no
+ONBOOT=yes
+TYPE=eth
 EOF
 
 cat << EOF > /etc/net/ifaces/'$HQ_CLI_IF'.200/options
@@ -210,8 +212,8 @@ VID=200
 HOST='$HQ_CLI_IF'
 EOF
 touch /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
-echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
 echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_CLI_IF'.200/resolv.conf
 systemctl restart network
 resolvconf -u
 '
