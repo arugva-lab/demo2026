@@ -118,6 +118,12 @@ systemctl restart isc-dhcp-server
 '
 vm_exec $ID_HQ_RTR "$DHCP_HQ_RTR" "DHCP server at HQ-RTR"
 
+CMD_HQ_CLI='
+systemctl restart network
+dhcpcd -4
+'
+vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "get address on HQ-CLI"
+
 # 5. DNS AT HQ-SRV
 DNS_HQ_SRV="
 touch /etc/apt/sources.list.d/demo2026.list
