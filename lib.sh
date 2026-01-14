@@ -15,6 +15,6 @@ vm_exec() {
     local B64_CMD=$(echo "$FULL_CMD" | base64 -w0)
     local WRAPPER="echo $B64_CMD | base64 -d | /bin/bash"
 
-    qm guest exec $VMID -- /bin/bash -c "$WRAPPER"
+    qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER"
     sleep 2
 }
