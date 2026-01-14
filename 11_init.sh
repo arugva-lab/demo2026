@@ -277,3 +277,49 @@ systemctl enable --now sshd
 '
 vm_exec $ID_HQ_SRV "$CMD_SSH_HQ_SRV" "SSH on HQ-SRV"
 
+#crontab
+CMD_CRON_BR_SRV='
+touch /root/fixafterreboot.sh
+cat >> /root/fixafterreboot.sh <<EOF
+sleep 3
+systemctl restart network
+ip r add default via 192.168.3.1
+resolvconf -u
+docker restart db
+docker restart testapp
+EOF
+
+echo "@reboot /root/fixafterreboot.sh" | crontab -
+'
+vm_exec $ID_BR_SRV "$CMD_CRON_BR_SRV" "crontab br"
+
+CMD_CRON_HQ_SRV='
+touch /root/fixafterreboot.sh
+cat >> /root/fixafterreboot.sh <<EOF
+sleep 3
+systemctl restart network
+ip r add default via 192.168.1.1
+resolvconf -u
+systemctl restart mariadb
+echo "@reboot /root/fixafterreboot.sh" | crontab -
+'
+vm_exec $ID_HQ_SRV "$CMD_CRON_HQ_SRV" "crontab hq"
+
+CMD_CRON_HQ_RTR='
+touch /root/fixafterreboot.sh
+cat >> /root/fixafterreboot.sh <<EOF
+sleep 3
+iptables-restore < /etc/iptables.rules
+echo "@reboot /root/fixafterreboot.sh" | crontab -
+'
+vm_exec $ID_HQ_RTR "$CMD_CRON_HQ_RTR" "crontab hq"
+
+CMD_CRON_BR_RTR='
+touch /root/fixafterreboot.sh
+cat >> /root/fixafterreboot.sh <<EOF
+sleep 3
+iptables-restore < /etc/iptables.rules
+echo "@reboot /root/fixafterreboot.sh" | crontab -
+'
+vm_exec $ID_BR_RTR "$CMD_CRON_BR_RTR" "crontab br"
+
