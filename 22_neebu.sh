@@ -10,7 +10,7 @@ CMD_DOCKER='
 for host in /sys/class/scsi_host/host*; do
         echo "- - -" > "$host/scan"
 done
-apt-get install docker-engine docker-compose -y
+apt-get update && apt-get install docker-engine docker-compose -y
 systemctl enable --now docker
 mkdir -p /mnt/add_cd
 mount -t auto -o ro /dev/sr1 /mnt/add_cd
