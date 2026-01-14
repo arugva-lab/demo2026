@@ -161,21 +161,25 @@ hq-srv	ansible_host=192.168.1.2	ansible_user=sshuser	ansible_port=2026
 hq-cli	ansible_host=192.168.2.2	ansible_user=sshuser	ansible_port=2026
 EOF
 
-ssh-keygen <<EOF
+if [ ! -f /root/.ssh/id_rsa ]; then
+    ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
+fi
 
 
 
 
 EOF
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 net_admin@192.168.1.1
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 net_admin@192.168.3.1
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 sshuser@192.168.1.2
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 sshuser@192.168.2.2
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 net_admin@192.168.1.1
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 net_admin@192.168.3.1
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 sshuser@192.168.1.2
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 sshuser@192.168.2.2
 rm -f /etc/ansible/ansible.cfg
 touch /etc/ansible/ansible.cfg
 cat >> /etc/ansible/ansible.cfg <<EOF
 [defaults]
 interpreter_python = python3
+host_key_checking = False
+inventory = /etc/ansible/hosts
 EOF
 ansible all -m ping
 '
