@@ -23,7 +23,7 @@ samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5
 vm_exec $ID_BR_SRV "$CMD_DC_BR_SRV" "test samba"
 
 CMD_DC_HQ_CLI='
-echo "P@ssw0rd" | /usr/sbin/realm join -U Administrator AU-TEAM.IRPO
+echo "P@ssw0rd" | /usr/sbin/realm join -U Administrator
 echo "session		optional	pam_mkhomedir.so skel=/etc/skel umask=0077" >> /etc/pam.d/system-auth
 echo "ad_enable_gc = False" >> /etc/sssd/sssd.conf
 sed -i "s/names = True/names = False/" /etc/sssd/sssd.conf
@@ -72,5 +72,6 @@ mkdir /mnt/nfs
 mount -t nfs HQ-SRV:/raid/nfs /mnt/nfs
 echo "HQ-SRV:/raid/nfs      /mnt/nfs      nfs      defaults      0      0" >> /etc/fstab
 touch /mnt/nfs/test_demo2026
+echo "test" >> /mnt/nfs/test_demo2026
 '
 vm_exec $ID_HQ_CLI "$CMD_NFS_HQ_CLI" "test nfs client"
