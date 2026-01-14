@@ -3,20 +3,21 @@
 source ./lib.sh
 source ./env.sh
 
-#qm set $ID_BR_SRV -scsi1 local:iso/Additional.iso,media=cdrom
-#sleep 30
 CMD_DOCKER='
-#for host in /sys/class/scsi_host/host*; do
-#	echo "- - -" > "$host/scan"
-#done
-#apt-get install docker-engine docker-compose -y
-#systemctl enable --now docker
-#mkdir -p /mnt/add_cd
-#mount -t auto -o ro /dev/sr0 /mnt/add_cd
-#cp -r /mnt/add_cd/docker /root/docker
-#docker image load -i /root/docker/site_latest.tar
-#docker image load -i /root/docker/mariadb_latest.tar
-mkdir -p /root/testapp/
+qm set $ID_BR_SRV -scsi1 local:iso/Additional.iso,media=cdrom
+sleep 30
+CMD_DOCKER='
+for host in /sys/class/scsi_host/host*; do
+        echo "- - -" > "$host/scan"
+done
+apt-get install docker-engine docker-compose -y
+systemctl enable --now docker
+mkdir -p /mnt/add_cd
+mount -t auto -o ro /dev/sr0 /mnt/add_cd
+cp -r /mnt/add_cd/docker /root/docker
+docker image load -i /root/docker/site_latest.tar
+docker image load -i /root/docker/postgresql_latest.tar
+mkdir -p testapp
 touch /root/testapp/docker-compose.yaml
 cat >> /root/testapp/docker-compose.yaml <<EOF
 services:
@@ -56,3 +57,4 @@ EOF
 docker compose -f /root/testapp/docker-compose.yaml up -d
 '
 vm_exec $ID_BR_SRV "$CMD_DOCKER" "test docker"
+
