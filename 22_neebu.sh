@@ -17,10 +17,10 @@ mount -t auto -o ro /dev/sr1 /mnt/add_cd
 mkdir -p /root/docker/
 cp -r /mnt/add_cd/docker /root/
 docker image load -i /root/docker/site_latest.tar
-docker image load -i /root/docker/postgresql_latest.tar
+docker image load -i /root/docker/mariadb_latest.tar
 mkdir -p /root/testapp/
 touch /root/testapp/docker-compose.yaml
-cat >> /root/testapp/docker-compose.yaml <<EOF
+cat > /root/testapp/docker-compose.yaml <<EOF
 services:
   testapp:
     image: site:latest
@@ -32,21 +32,22 @@ services:
       - 8080:8000
     environment:
 
-      DB_TYPE: postgres
+      DB_TYPE: maria
       DB_HOST: db
       DB_NAME: testdb
-      DB_PORT: 5432
+      DB_PORT: 3306
       DB_USER: test
       DB_PASS: P@ssw0rd
 
   db:
-    image: postgres:15-alpine
+    image: mariadb:latest
     container_name: db
     restart: always
     environment:
-      POSTGRES_DB: testdb
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: P@ssw0rd
+      MARIADB_DATABASE: testdb
+      MARIADB_USER: test
+      MARIADB_PASSWORD: P@ssw0rd
+      MARIADB_ROOT_PASSWORD: P@ssw0rd
 
     volumes:
       - /root/testapp/db_data:/var/lib/mysql
