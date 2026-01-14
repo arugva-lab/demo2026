@@ -40,7 +40,7 @@ services:
       DB_PASS: P@ssw0rd
 
   db:
-    image: mariadb:latest
+    image: mariadb:10.11
     container_name: db
     restart: always
     environment:
@@ -119,7 +119,7 @@ vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "swithing port web"
 
 CMD_NGINX="
 apt-get update && apt-get install nginx apache2-utils -y
-htpasswd -bc /etc/nginx/.htpasswd WEBc 'P@ssw0rd'
+htpasswd -bc /etc/nginx/.htpasswd WEB 'P@ssw0rd'
 rm -f /etc/nginx/sites-available/default
 touch /etc/nginx/sites-available/default
 cat >> /etc/nginx/sites-available/default <<EOF
@@ -131,7 +131,7 @@ server {
         location / {
                         proxy_pass http://172.16.1.2:8080;
 			auth_basic 'Web-Authorization';
-			auth_basic_user_file /etc/nginx/.htpaswwd;
+			auth_basic_user_file /etc/nginx/.htpasswd;
                 }
 }
 
