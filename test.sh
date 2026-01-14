@@ -6,7 +6,7 @@ source ./env.sh
 qm set $ID_HQ_SRV -scsi3 local:iso/Additional.iso,media=cdrom
 
 CMD_WEB="
-for host in /sys/class/scsi_host/host; do
+for host in /sys/class/scsi_host/host*; do
 	echo '- - -' > '$host/scan'
 done
 
@@ -22,6 +22,7 @@ sed -i 's/\$username = \"user\"/\$username = \"web\";/' /var/www/html/index.php
 sed -i 's/\$password = \"password\"/\$password = \"P@ssw0rd\";/' /var/www/html/index.php
 sed -i 's/\$dbname = \"db\"/\$dbname = \"webdb\";/' /var/www/html/index.php
 systemctl enable --now mariadb
+sleep 22
 mariadb -u root <<'EOF'
 CREATE DATABASE webdb;
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'P@ssw0rd';
