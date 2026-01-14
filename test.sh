@@ -17,13 +17,14 @@ cp /mnt/add_cd/web/index.php /var/www/html
 cp /mnt/add_cd/web/logo.png /var/www/html
 chown -R apache:apache /var/www/html
 chmod -R 755 /var/www/html
-sed -i 's/.*username.*/$username = \'web\'/' /var/www/html/index.php
-sed -i 's/.*password.*/$password = \'P@ssw0rd\'/' /var/www/html/index.php
-sed -i 's/.*dbname.*/$dbname = \'webdb\'/' /var/www/html/index.php
+sed -i 's/\r//g' /var/www/html/index.php
+sed -i 's/.*username.*/\$username = \"web\";/' /var/www/html/index.php
+sed -i 's/.*password.*/\$password = \"P@ssw0rd\";/' /var/www/html/index.php
+sed -i 's/.*dbname.*/\$dbname = \"webdb\";/' /var/www/html/index.php
 #echo 'DocumentRoot/var/www/html >> /etc/httpd2/conf/sites-available/default.conf
 #sed -i 
 systemctl enable --now mariadb
-mariadb -u root <<EOF
+mariadb -u root <<'EOF'
 CREATE DATABASE webdb;
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'P@ssw0rd';
 GRANT ALL PRIVILEGES ON webdb.* TO 'web'@'localhost' WITH GRANT OPTION;
