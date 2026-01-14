@@ -56,7 +56,7 @@ samba-tool group add hq
 samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5
 '
 vm_exec $ID_BR_SRV "$CMD_DC_BR_SRV" "test samba"
-sleep 60
+sleep 40
 CMD_DC_HQ_CLI='
 echo "P@ssw0rd" | kinit Administrator@AU-TEAM.IRPO
 echo "P@ssw0rd" | /usr/sbin/realm join -U Administrator
