@@ -53,4 +53,23 @@ mount /dev/md0p1 /home/raid
 '
 vm_exec $ID_HQ_SRV "$CMD_RAID_HQ_SRV" "test raid"
 
+#nfs
+CMD_NFS_HQ_SRV='
+apt-get intsall nfs-server
+mkdir /raid/nfs
+chmod 777 /raid/nfs
+echo "/raid/nfs       192.168.2.0/28(rw,no_subtree_check)" >> /etc/exports
+exports -a
+systemctl restart nfs-server
+systemctl enable --now nfs-server
+'
+vm_exec $ID_HQ_SRV "$CMD_NFS_HQ_SRV" "test nfs server"
 
+CMD_NFS_HQ_CLI='
+apt-get install nfs-clients
+mkdir /mnt/nfs
+mount -t nfs HQ-SRV:/raid/nfs /mnt/nfs
+echo "HQ-SRV:/raid/nfs      /mnt/nfs      nfs      defaults      0      0" >> /etc/fstab
+touch /mnt/nfs/test_demo2026
+'
+vm_exec $ID_HQ_CLI "$CMD_NFS_HQ_CLI" "test nfs client"
