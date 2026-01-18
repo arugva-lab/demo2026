@@ -21,7 +21,7 @@ samba-tool group add hq
 samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5
 '
 vm_exec $ID_BR_SRV "$CMD_DC_BR_SRV" "test samba"
-
+sleep 60
 CMD_DC_HQ_CLI='
 echo "P@ssw0rd" | /usr/sbin/realm join -U Administrator
 echo "session		optional	pam_mkhomedir.so skel=/etc/skel umask=0077" >> /etc/pam.d/system-auth
@@ -39,6 +39,7 @@ vm_exec $ID_HQ_CLI "$CMD_DC_HQ_CLI" "test samba"
 qm set "$ID_HQ_SRV" --scsi1 local-lvm:1
 qm set "$ID_HQ_SRV" --scsi2 local-lvm:1
 CMD_RAID_HQ_SRV='
+sleep 10
 mdadm --create /dev/md0 --level=0 --raid-device=2 /dev/sdb /dev/sdc
 fdisk /dev/md0 << EOF
 n
