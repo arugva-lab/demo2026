@@ -3,6 +3,41 @@
 source ./env.sh
 source ./lib.sh
 
+#chrony
+CMD_ISP_CHRONY='
+apt-get install chrony -y
+sed -i "s/pool/#pool/" /etc/chrony/chrony.conf
+sed -i "s/rtcsync/#rtcsync/" /etc/chrony/chrony.conf
+echo "local stratum 5" >> /etc/chrony/chrony.conf
+echo "allow all" >> /etc/chrony/chrony.conf
+systemctl restart chronyd
+'
+vm_exec $ID_ISP "$CMD_ISP_CHRONY" "test chrony"
+
+CMD_ASTRA_CHRONY='
+apt-get install chrony -y
+timedatectl set-ntp false
+sed -i "s/pool/#pool/" /etc/chrony/chrony.conf
+sed -i "s/rtcsync/#rtcsync/" /etc/chrony/chrony.conf
+echo "server 172.16.1.1" >> /etc/chrony/chrony.conf
+systemctl restart chronyd
+'
+vm_exec $ID_HQ_RTR "$CMD_ASTRA_CHRONY" "test chrony"
+vm_exec $ID_BR_RTR "$CMD_ASTRA_CHRONY" "test chrony"
+
+CMD_ALT_CHRONY='
+apt-get install chrony -y
+timedatectl set-ntp false
+sed -i "s/pool/#pool/" /etc/chrony.conf
+sed -i "s/rtcsync/#rtcsync/" /etc/chrony.conf
+echo "server 172.16.1.1" >> /etc/chrony.conf
+systemctl restart chronyd
+'
+
+vm_exec $ID_HQ_SRV "$CMD_ALT_CHRONY" "test chrony"
+vm_exec $ID_BR_SRV "$CMD_ALT_CHRONY" "test chrony"
+vm_exec $ID_HQ_CLI "$CMD_ALT_CHRONY" "test chrony"
+
 #Samba DC on BR-SRV
 CMD_DC_BR_SRV='
 apt-get update && apt-get install task-samba-dc rng-tools -y
@@ -78,37 +113,5 @@ echo "test" >> /mnt/nfs/test_demo2026
 '
 vm_exec $ID_HQ_CLI "$CMD_NFS_HQ_CLI" "test nfs client"
 
-#chrony
-CMD_ISP_CHRONY='
-apt-get install chrony -y
-sed -i "s/pool/#pool/" /etc/chrony/chrony.conf
-sed -i "s/rtcsync/#rtcsync/" /etc/chrony/chrony.conf
-echo "local stratum 5" >> /etc/chrony/chrony.conf
-echo "allow all" >> /etc/chrony/chrony.conf
-systemctl restart chronyd
-'
-vm_exec $ID_ISP "$CMD_ISP_CHRONY" "test chrony"
 
-CMD_ASTRA_CHRONY='
-apt-get install chrony -y
-timedatectl set-ntp false
-sed -i "s/pool/#pool/" /etc/chrony/chrony.conf
-sed -i "s/rtcsync/#rtcsync/" /etc/chrony/chrony.conf
-echo "server 172.16.1.1" >> /etc/chrony/chrony.conf
-systemctl restart chronyd
-'
-vm_exec $ID_HQ_RTR "$CMD_ASTRA_CHRONY" "test chrony"
-vm_exec $ID_BR_RTR "$CMD_ASTRA_CHRONY" "test chrony"
 
-CMD_ALT_CHRONY='
-apt-get install chrony -y
-timedatectl set-ntp false
-sed -i "s/pool/#pool/" /etc/chrony.conf
-sed -i "s/rtcsync/#rtcsync/" /etc/chrony.conf
-echo "server 172.16.1.1" >> /etc/chrony.conf
-systemctl restart chronyd
-'
-
-vm_exec $ID_HQ_SRV "$CMD_ALT_CHRONY" "test chrony"
-vm_exec $ID_BR_SRV "$CMD_ALT_CHRONY" "test chrony"
-vm_exec $ID_HQ_CLI "$CMD_ALT_CHRONY" "test chrony"
