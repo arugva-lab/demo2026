@@ -36,7 +36,7 @@ systemctl restart sshd
 touch /etc/sudoers.d/wheel
 echo "WHEEL_USERS	ALL=(ALL:ALL) NOPASSWD:ALL"
 '
-vm_exec $ID_HQ_CLI "$CMD_SSH_CLI" "ssh hq-cli"
+vm_exec $ID_HQ_CLI "$CMD_SSH_CLI" "ssh hq-cli" >> /etc/sudoers.d/wheel
 
 #BR-SRV ansible
 CMD_ANS_TEST='
