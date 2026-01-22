@@ -55,10 +55,11 @@ ssh-keygen <<EOF
 
 
 EOF
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 net_admin@192.168.1.1
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 net_admin@192.168.3.1
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 sshuser@192.168.1.2
-sshpass -p "P@ssw0rd" ssh-copy-id -p 2026 sshuser@192.168.2.2
+echo "y"
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -p 2026 net_admin@192.168.1.1
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -p 2026 net_admin@192.168.3.1
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -p 2026 sshuser@192.168.1.2
+sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -p 2026 sshuser@192.168.2.2
 rm -f /etc/ansible/ansible.cfg
 touch /etc/ansible/ansible.cfg
 cat >> /etc/ansible/ansible.cfg <<EOF
