@@ -22,7 +22,6 @@ sed -i "s/rtcsync/#rtcsync/" /etc/chrony/chrony.conf
 echo "server 172.16.1.1" >> /etc/chrony/chrony.conf
 systemctl restart chronyd
 '
-vm_exec $ID_HQ_RTR "$CMD_ASTRA_CHRONY" "test chrony"
 vm_exec $ID_BR_RTR "$CMD_ASTRA_CHRONY" "test chrony"
 
 CMD_ALT_CHRONY='
