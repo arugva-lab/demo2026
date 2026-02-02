@@ -3,6 +3,24 @@
 source ./env.sh
 source ./lib.sh
 
+#disable all checking apt
+CMD_CHECK_DIS='
+touch /etc/apt/apt.conf.d/99-disable-checking
+cat > /etc/apt/apt.conf.d/99-disable-checking <<EOF
+Acquire::Check-Valid-Until "false";
+Acquire::AllowInsecureRepositories "true";
+Acquire::AllowDowngradeToInsecureRepositories "true";
+Acquire::https::Verify-Peer "false";
+Acquire::https::Verify-Host "false";
+EOF
+'
+vm_exec $ID_ISP "$CMD_CHECK_DIS" "disable check time"
+vm_exec $ID_HQ_RTR "$CMD_CHECK_DIS" "disable check time"
+vm_exec $ID_BR_RTR "$CMD_CHECK_DIS" "disable check time"
+vm_exec $ID_BR_SRV "$CMD_CHECK_DIS" "disable check time"
+vm_exec $ID_HQ_SRV "$CMD_CHECK_DIS" "disable check time"
+vm_exec $ID_HQ_CLI "$CMD_CHECK_DIS" "disable check time"
+
 #--- 1.1 ISP --- 
 CMD_ISP_NET='
 hostnamectl set-hostname isp.au-team.irpo
@@ -253,16 +271,3 @@ systemctl enable --now sshd
 '
 vm_exec $ID_HQ_SRV "$CMD_SSH_HQ_SRV" "SSH on HQ-SRV"
 
-#fix trouble with checking date&time apt
-CMD_TIME='
-touch /etc/apt/apt.conf.d/99-no-check-valid
-touch /etc/apt/apt.conf.d/99-no-check-ssl
-echo "Acquire::Check-Valid-Until \"false\";" > /etc/apt/apt.conf.d/99-no-check-valid
-echo "Acquire::https:::Verify-Peer \"false\";" > /etc/apt/apt.conf.d/99-no-check-ssl
-'
-vm_exec $ID_ISP "$CMD_TIME" "disable check time"
-vm_exec $ID_HQ_RTR "$CMD_TIME" "disable check time"
-vm_exec $ID_BR_RTR "$CMD_TIME" "disable check time"
-vm_exec $ID_BR_SRV "$CMD_TIME" "disable check time"
-vm_exec $ID_HQ_SRV "$CMD_TIME" "disable check time"
-vm_exec $ID_HQ_CLI "$CMD_TIME" "disable check time"
