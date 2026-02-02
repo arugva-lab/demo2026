@@ -253,3 +253,16 @@ systemctl enable --now sshd
 '
 vm_exec $ID_HQ_SRV "$CMD_SSH_HQ_SRV" "SSH on HQ-SRV"
 
+#fix trouble with checking date&time apt
+CMD_TIME='
+touch /etc/apt/apt.conf.d/99-no-check-valid
+touch /etc/apt/apt.conf.d/99-no-check-ssl
+echo "Acquire::Check-Valid-Until \"false\";" > /etc/apt/apt.conf.d/99-no-check-valid
+echo "Acquire::https:::Verify-Peer \"false\";" > /etc/apt/apt.conf.d/99-no-check-ssl
+'
+vm_exec $ID_ISP "$CMD_TIME" "disable check time"
+vm_exec $ID_HQ_RTR "$CMD_TIME" "disable check time"
+vm_exec $ID_BR_RTR "$CMD_TIME" "disable check time"
+vm_exec $ID_BR_SRV "$CMD_TIME" "disable check time"
+vm_exec $ID_HQ_SRV "$CMD_TIME" "disable check time"
+vm_exec $ID_HQ_CLI "$CMD_TIME" "disable check time"
