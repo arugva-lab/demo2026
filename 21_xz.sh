@@ -97,7 +97,7 @@ apt-get install nfs-server -y
 mkdir -p /raid/nfs
 chmod 777 /raid/nfs
 echo "/raid/nfs       192.168.2.0/28(rw,no_subtree_check)" >> /etc/exports
-exports -a
+exportfs -a
 systemctl restart nfs-server
 systemctl enable --now nfs-server
 '
