@@ -86,7 +86,7 @@ iface '$HQ_IF_LAN'.100 inet static
 
 auto '$HQ_IF_LAN'.200
 iface '$HQ_IF_LAN'.200 inet static
-	address 192.168.2.1/27
+	address 192.168.2.1/28
 	vlan-raw-device '$HQ_IF_LAN'
 
 auto '$HQ_IF_LAN'.999
