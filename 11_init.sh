@@ -172,6 +172,8 @@ touch /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
 echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
 echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
 systemctl disable --now systemd-resolved.service
+rm -f /etc/resolv.conf
+touch /etc/resolv.conf
 systemctl restart network
 resolvconf -u
 ip r add default via 192.168.1.1
@@ -197,6 +199,8 @@ touch /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 systemctl disable --now systemd-resolved.service
+rm -f /etc/resolv.conf
+touch /etc/resolv.conf
 systemctl restart network
 resolvconf -u
 ip r add default via 192.168.3.1
