@@ -301,6 +301,7 @@ systemctl restart network
 ip r add default via 192.168.1.1
 resolvconf -u
 systemctl restart mariadb
+EOF
 echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
 vm_exec $ID_HQ_SRV "$CMD_CRON_HQ_SRV" "crontab hq"
@@ -310,6 +311,7 @@ touch /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
+EOF
 echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
 vm_exec $ID_HQ_RTR "$CMD_CRON_HQ_RTR" "crontab hq"
@@ -319,7 +321,9 @@ touch /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
+EOF
 echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
 vm_exec $ID_BR_RTR "$CMD_CRON_BR_RTR" "crontab br"
+
 
