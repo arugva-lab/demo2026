@@ -19,7 +19,8 @@ apt-get install chrony -y
 timedatectl set-ntp false
 sed -i "s/pool/#pool/" /etc/chrony/chrony.conf
 sed -i "s/rtcsync/#rtcsync/" /etc/chrony/chrony.conf
-echo "server 172.16.1.1" >> /etc/chrony/chrony.conf
+echo "server 172.16.1.1 iburst" >> /etc/chrony/chrony.conf
+echo "makestep 1 -1" >> /etc/chrony.conf
 systemctl restart chronyd
 '
 vm_exec $ID_BR_RTR "$CMD_ASTRA_CHRONY" "test chrony"
@@ -29,7 +30,8 @@ apt-get install chrony -y
 timedatectl set-ntp false
 sed -i "s/pool/#pool/" /etc/chrony.conf
 sed -i "s/rtcsync/#rtcsync/" /etc/chrony.conf
-echo "server 172.16.1.1" >> /etc/chrony.conf
+echo "server 172.16.1.1 iburst" >> /etc/chrony.conf
+echo "makestep 1 -1" >> /etc/chrony.conf
 systemctl restart chronyd
 '
 
