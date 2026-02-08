@@ -120,6 +120,7 @@ vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "swithing port web"
 CMD_NGINX="
 apt-get update && apt-get install nginx apache2-utils -y
 htpasswd -bc /etc/nginx/.htpasswd WEB 'P@ssw0rd'
+chmod 644 /etc/nginx/.httpasswd
 rm -f /etc/nginx/sites-available/default
 touch /etc/nginx/sites-available/default
 cat >> /etc/nginx/sites-available/default <<EOF
