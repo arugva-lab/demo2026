@@ -59,6 +59,8 @@ interface gre1
 exit
 !
 router ospf
+ passive-interface default
+ no passive-interface gre1
  network 10.10.10.0/30 area 0
  network 192.168.1.0/27 area 0
  network 192.168.2.0/28 area 0
@@ -89,6 +91,8 @@ interface gre1
 exit
 !
 router ospf
+ passive-interface default
+ no passive-interface gre1
  network 10.10.10.0/30 area 0
  network 192.168.3.0/27 area 0
 exit
@@ -133,6 +137,7 @@ echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/noarch classic' >> /
 apt-get update && apt-get install bind bind-utils -y
 sed -i 's/listen-on { 127.0.0.1; };/listen-on { any; };/' /etc/bind/options.conf
 sed -i 's/allow-query     { localhost; };/allow-query     { any; };/' /etc/bind/options.conf
+sed -i 's/#forwarders/forwarders { 8.8.8.8; };' /etc/bind/options.conf
 
 cat >> /etc/bind/local.conf <<'EOF'
 
@@ -166,8 +171,8 @@ br-srv  IN  A       192.168.3.2
 hq-rtr  IN  A       192.168.1.1
 br-rtr  IN  A       192.168.3.1
 hq-cli	IN  A       192.168.2.2
-web     IN  A       172.16.1.1
-docker  IN  A       172.16.2.1
+web     IN  A       172.16.2.1
+docker  IN  A       172.16.1.1
 
 ;DNS for DC
 _ldap._tcp               600 IN SRV 0 100 389   br-srv

@@ -77,7 +77,8 @@ qm set "$ID_HQ_SRV" --scsi1 local-lvm:1
 qm set "$ID_HQ_SRV" --scsi2 local-lvm:1
 CMD_RAID_HQ_SRV='
 sleep 10
-mdadm --create /dev/md0 --level=0 --raid-device=2 /dev/sdb /dev/sdc
+mdadm --create /dev/md0 --level=0 --raid-device=2 /dev/sdb /dev/sdc --run
+touch /etc/mdadm.conf
 fdisk /dev/md0 << EOF
 n
 p
@@ -87,8 +88,10 @@ p
 w
 EOF
 mkfs.ext4 /dev/md0p1
-mkdir /home/raid
-mount /dev/md0p1 /home/raid
+mdadm --detail --scan >> /etc/mdadm.conf
+mkdir /raid
+echo "/dev/md0p1 /raid ext 4 default 0 2" >> /etc/fstab
+mount -a
 '
 vm_exec $ID_HQ_SRV "$CMD_RAID_HQ_SRV" "test raid"
 
@@ -97,8 +100,8 @@ CMD_NFS_HQ_SRV='
 apt-get install nfs-server -y
 mkdir -p /raid/nfs
 chmod 777 /raid/nfs
-echo "/raid/nfs       192.168.2.0/28(rw,no_subtree_check)" >> /etc/exports
-exportfs -a
+echo "/raid/nfs       192.168.2.0/28(rw,sync,no_subtree_check)" > /etc/exports
+exportfs -ra
 systemctl restart nfs-server
 systemctl enable --now nfs-server
 '
@@ -107,8 +110,8 @@ vm_exec $ID_HQ_SRV "$CMD_NFS_HQ_SRV" "test nfs server"
 CMD_NFS_HQ_CLI='
 apt-get install nfs-clients
 mkdir /mnt/nfs
-mount -t nfs HQ-SRV:/raid/nfs /mnt/nfs
-echo "HQ-SRV:/raid/nfs      /mnt/nfs      nfs      defaults      0      0" >> /etc/fstab
+echo "HQ-SRV:/raid/nfs      /mnt/nfs      nfs      defaults,_netdev      0      0" >> /etc/fstab
+mount -a
 touch /mnt/nfs/test_demo2026
 echo "test" >> /mnt/nfs/test_demo2026
 '

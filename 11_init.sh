@@ -52,6 +52,7 @@ touch /etc/iptables.rules
 iptables-save >> /etc/iptables.rules
 
 systemctl restart networking
+dhclient
 '
 CMD_ISP_USER='
 useradd -m -s /bin/bash '$USER_ADMIN'
@@ -166,6 +167,7 @@ EOF
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
+chmod 4755 /usr/bin/sudo
 
 sed -i 's/127.0.0.53//' /etc/resolvconf.conf
 touch /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
@@ -207,7 +209,7 @@ ip r add default via 192.168.3.1
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH''
-
+chmod 4755 /usr/bin/sudo
 
 vm_exec $ID_BR_SRV "$CMD_BR_SRV" "BR-SRV"
 
@@ -287,6 +289,8 @@ ip r add default via 192.168.3.1
 resolvconf -u
 docker restart db
 docker restart testapp
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
 EOF
 
 echo "@reboot /root/fixafterreboot.sh" | crontab -
@@ -301,6 +305,8 @@ systemctl restart network
 ip r add default via 192.168.1.1
 resolvconf -u
 systemctl restart mariadb
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
 EOF
 echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
@@ -311,7 +317,11 @@ touch /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
+sysctl -w net.ipv4.ip_forward=1
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
 EOF
+
 echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
 vm_exec $ID_HQ_RTR "$CMD_CRON_HQ_RTR" "crontab hq"
@@ -321,9 +331,24 @@ touch /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
+sysctl -w net.ipv4.ip_forward=1
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
 EOF
 echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
 vm_exec $ID_BR_RTR "$CMD_CRON_BR_RTR" "crontab br"
 
 
+CMD_CRON_ISP='
+cat >> /root/fixafterreboot.sh <<EOF
+sleep 3
+iptables-restore < /etc/iptables.rules
+dhclient
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
+sysctl -w net.ipv4.ip_forward=1
+EOF
+echo "@reboot /root/fixafterreboot.sh" | crontab -
+'
+vm_exec $ID_ISP "$CMD_CRON_ISP" "crontab isp"
