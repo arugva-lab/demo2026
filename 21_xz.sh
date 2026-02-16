@@ -90,7 +90,7 @@ EOF
 mkfs.ext4 /dev/md0p1
 mdadm --detail --scan >> /etc/mdadm.conf
 mkdir /raid
-echo "/dev/md0p1 /raid ext 4 default 0 2" >> /etc/fstab
+echo "/dev/md0p1 /raid ext 4 defaults 0 2" >> /etc/fstab
 mount -a
 '
 vm_exec $ID_HQ_SRV "$CMD_RAID_HQ_SRV" "test raid"
