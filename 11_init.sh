@@ -210,7 +210,7 @@ useradd -m -u 2026 -s /bin/bash '$USER_SSH'
 echo "'$USER_SSH':'$PASS'" | chpasswd
 echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
 chmod 4755 /usr/bin/sudo
-
+'
 vm_exec $ID_BR_SRV "$CMD_BR_SRV" "BR-SRV"
 
 # --- 3.1 HQ-CLI ---
