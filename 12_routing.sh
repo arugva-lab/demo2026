@@ -135,13 +135,25 @@ echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64 classic gostc
 echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64-i586 classic' >> /etc/apt/sources.list.d/demo2026.list
 echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/noarch classic' >> /etc/apt/sources.list.d/demo2026.list
 apt-get update && apt-get install bind bind-utils -y
-sed -i '/options {/a\
+cat > /etc/bind/options.conf <<EOF
+options {
+    directory \"/etc/bind/zone\";
+    dump-file \"/var/run/named/named_dump.db\";
+    statistics-file \"/var/run/named/named.stats\";
+    listen-on { any; };
+    allow-query { any; };
     recursion yes;
-    allow-recursion { any; };\
-    allow-query-cache { any; };' /etc/bind/options.conf
-sed -i 's/listen-on { 127.0.0.1; };/listen-on { any; };/' /etc/bind/options.conf
-sed -i 's/allow-query     { localhost; };/allow-query     { any; };/' /etc/bind/options.conf
-sed -i 's/#forwarders/forwarders { 8.8.8.8; };/' /etc/bind/options.conf
+    allow-recursion { any; };
+    allow-query-cache { any; };
+    forwarders { 8.8.8.8; };
+    dnssec-validation no;
+};
+
+logging {
+    category default { default_syslog; };
+    category general { default_syslog; };
+};
+EOF
 
 cat >> /etc/bind/local.conf <<'EOF'
 
