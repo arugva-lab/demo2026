@@ -141,7 +141,7 @@ sed -i '/options {/a\
     allow-query-cache { any; };' /etc/bind/options.conf
 sed -i 's/listen-on { 127.0.0.1; };/listen-on { any; };/' /etc/bind/options.conf
 sed -i 's/allow-query     { localhost; };/allow-query     { any; };/' /etc/bind/options.conf
-sed -i 's/#forwarders/forwarders { 8.8.8.8; };' /etc/bind/options.conf
+sed -i 's/#forwarders/forwarders { 8.8.8.8; };/' /etc/bind/options.conf
 
 cat >> /etc/bind/local.conf <<'EOF'
 
