@@ -76,9 +76,9 @@ cp /mnt/add_cd/web/logo.png /var/www/html
 chown -R apache:apache /var/www/html
 chmod -R 755 /var/www/html
 sed -i 's/\r//g' /var/www/html/index.php
-sed -i 's/\$username = \"user\"/\$username = \"web\";/' /var/www/html/index.php
-sed -i 's/\$password = \"password\"/\$password = \"P@ssw0rd\";/' /var/www/html/index.php
-sed -i 's/\$dbname = \"db\"/\$dbname = \"webdb\";/' /var/www/html/index.php
+sed -i 's/\$username = \"user\"/\$username = \"web\"/' /var/www/html/index.php
+sed -i 's/\$password = \"password\"/\$password = \"P@ssw0rd\"/' /var/www/html/index.php
+sed -i 's/\$dbname = \"db\"/\$dbname = \"webdb\"/' /var/www/html/index.php
 systemctl enable --now mariadb
 sleep 22
 mariadb -u root <<'EOF'
