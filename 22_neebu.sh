@@ -121,7 +121,7 @@ CMD_NGINX="
 apt-get update && apt-get install nginx apache2-utils -y
 htpasswd -bc /etc/nginx/.htpasswd WEB 'P@ssw0rd'
 sleep 5
-chmod 644 /etc/nginx/.httpasswd
+chmod 644 /etc/nginx/.htpasswd
 rm -f /etc/nginx/sites-available/default
 touch /etc/nginx/sites-available/default
 cat >> /etc/nginx/sites-available/default <<EOF
