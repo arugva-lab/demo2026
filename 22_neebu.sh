@@ -129,7 +129,7 @@ server {
         listen 80 default_server;
         listen [::]:80 default_server;
         root /var/www/html;
-        server_name web/au-team.irpo;
+        server_name web.au-team.irpo;
         location / {
                         proxy_pass http://172.16.1.2:8080;
 			auth_basic 'Web-Authorization';
