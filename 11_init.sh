@@ -56,10 +56,10 @@ dhclient
 '
 CMD_ISP_USER='
 useradd -m -s /bin/bash '$USER_ADMIN'
-echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD:ALL" > /etc/sudors.d/'$USER_ADMIN'
+echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/'$USER_ADMIN'
 '
 vm_exec $ID_ISP "$CMD_ISP_NET" "ISP net"
-vm_exec $ID_ISP "$CMD_ISP_NET" "ISP user"
+vm_exec $ID_ISP "$CMD_ISP_USER" "ISP user"
 
 # --- 1.2 HQ-RTR ---
 CMD_HQ_RTR='
