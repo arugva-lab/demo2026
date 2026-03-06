@@ -44,7 +44,7 @@ CMD_DC_BR_SRV='
 apt-get update && apt-get install task-samba-dc rng-tools -y
 systemctl enable --now rngd
 rm -f /etc/samba/smb.conf
-samba-tool domain provision --realm=AU-TEAM.IRPO --domain=AU-TEAM --server-role=dc --dns-backend=SAMBA_INTERNAL --adminpass="P@ssw0rd" --use-rfc2307 --host-ip=192.168.1.2 --host-name=br-srv --option="interfaces=lo '$BR_SRV_IF'" --option="bind interfaces only=yes"
+samba-tool domain provision --realm=AU-TEAM.IRPO --domain=AU-TEAM --server-role=dc --dns-backend=SAMBA_INTERNAL --adminpass="P@ssw0rd" --use-rfc2307 --host-ip=192.168.3.2 --host-name=br-srv --option="interfaces=lo '$BR_SRV_IF'" --option="bind interfaces only=yes"
 systemctl restart samba
 systemctl enable --now samba
 cp /var/lib/samba/private/krb5.conf /etc/krb5.conf
