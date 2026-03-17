@@ -282,6 +282,7 @@ vm_exec $ID_HQ_SRV "$CMD_SSH_HQ_SRV" "SSH on HQ-SRV"
 #crontab
 CMD_CRON_BR_SRV='
 touch /root/fixafterreboot.sh
+chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 systemctl restart network
@@ -299,6 +300,7 @@ vm_exec $ID_BR_SRV "$CMD_CRON_BR_SRV" "crontab br"
 
 CMD_CRON_HQ_SRV='
 touch /root/fixafterreboot.sh
+chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 systemctl restart network
@@ -314,6 +316,7 @@ vm_exec $ID_HQ_SRV "$CMD_CRON_HQ_SRV" "crontab hq"
 
 CMD_CRON_HQ_RTR='
 touch /root/fixafterreboot.sh
+chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
@@ -328,6 +331,7 @@ vm_exec $ID_HQ_RTR "$CMD_CRON_HQ_RTR" "crontab hq"
 
 CMD_CRON_BR_RTR='
 touch /root/fixafterreboot.sh
+chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
@@ -341,6 +345,8 @@ vm_exec $ID_BR_RTR "$CMD_CRON_BR_RTR" "crontab br"
 
 
 CMD_CRON_ISP='
+touch /root/fixafterreboot.sh
+chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
 iptables-restore < /etc/iptables.rules
