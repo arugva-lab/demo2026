@@ -319,7 +319,7 @@ touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
-iptables-restore < /etc/iptables.rules
+/sbin/iptables-restore < /etc/iptables.rules
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sysctl -w net.ipv6.conf.default.disable_ipv6=1
@@ -334,7 +334,7 @@ touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
-iptables-restore < /etc/iptables.rules
+/sbin/iptables-restore < /etc/iptables.rules
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sysctl -w net.ipv6.conf.default.disable_ipv6=1
@@ -343,13 +343,12 @@ echo "@reboot /root/fixafterreboot.sh" | crontab -
 '
 vm_exec $ID_BR_RTR "$CMD_CRON_BR_RTR" "crontab br"
 
-
 CMD_CRON_ISP='
 touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
 cat >> /root/fixafterreboot.sh <<EOF
 sleep 3
-iptables-restore < /etc/iptables.rules
+/sbin/iptables-restore < /etc/iptables.rules
 dhclient
 sysctl -w net.ipv6.conf.all.disable_ipv6=1
 sysctl -w net.ipv6.conf.default.disable_ipv6=1
