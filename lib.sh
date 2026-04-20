@@ -3,8 +3,6 @@ vm_exec() {
     local CMD=$2
     local DESC=$3
     
-    echo "[$VMID] $DESC..."
-    
     if ! qm agent $VMID ping >/dev/null 2>&1; then
         echo " AGENT IS NOT AVAILABLE AT $VMID"
         return
@@ -15,6 +13,6 @@ vm_exec() {
     local B64_CMD=$(echo "$FULL_CMD" | base64 -w0)
     local WRAPPER="echo $B64_CMD | base64 -d | /bin/bash"
 
-    qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER"
+    qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER" >/dev/null 2>&1
     sleep 2
 }
