@@ -204,6 +204,7 @@ systemctl disable --now systemd-resolved.service
 rm -f /etc/resolv.conf
 touch /etc/resolv.conf
 systemctl restart network
+chmod o+r g+r /etc/resolv.conf
 resolvconf -u
 ip r add default via 192.168.3.1
 useradd -m -u 2026 -s /bin/bash '$USER_SSH'
