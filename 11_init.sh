@@ -3,6 +3,8 @@
 source ./env.sh
 source ./lib.sh
 
+check_env
+
 #disable all checking apt
 CMD_CHECK_DIS='
 touch /etc/apt/apt.conf.d/99-disable-checking
