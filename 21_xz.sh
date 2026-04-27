@@ -110,7 +110,7 @@ systemctl enable --now nfs-server
 vm_exec $ID_HQ_SRV "$CMD_NFS_HQ_SRV" "test nfs server"
 
 CMD_NFS_HQ_CLI='
-apt-get install nfs-clients
+apt-get install nfs-clients -y
 mkdir /mnt/nfs
 echo "HQ-SRV:/raid/nfs      /mnt/nfs      nfs      defaults,_netdev      0      0" >> /etc/fstab
 mount -a
@@ -119,8 +119,7 @@ echo "test" >> /mnt/nfs/test_demo2026
 '
 vm_exec $ID_HQ_CLI "$CMD_NFS_HQ_CLI" "test nfs client"
 
-#ANSIBLE
-
+# --- ANSIBLE ---
 #ssh at hq,br-rtr
 CMD_SSH_TEST='
 apt-get update && apt-get install openssh-server -y
@@ -158,7 +157,7 @@ vm_exec $ID_HQ_CLI "$CMD_SSH_CLI" "ssh hq-cli"
 #BR-SRV ansible
 CMD_ANS_TEST='
 apt-get update && apt-get install ansible sshpass -y
-cat >> /etc/ansible/hosts <<EOF
+cat > /etc/ansible/hosts <<EOF
 [clients]
 hq-rtr	ansible_host=192.168.1.1	ansible_user=net_admin	ansible_port=2026
 br-rtr	ansible_host=192.168.3.1	ansible_user=net_admin	ansible_port=2026
@@ -178,9 +177,7 @@ sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_r
 sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 net_admin@192.168.3.1
 sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 sshuser@192.168.1.2
 sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 sshuser@192.168.2.2
-rm -f /etc/ansible/ansible.cfg
-touch /etc/ansible/ansible.cfg
-cat >> /etc/ansible/ansible.cfg <<EOF
+cat > /etc/ansible/ansible.cfg <<EOF
 [defaults]
 interpreter_python = python3
 host_key_checking = False
