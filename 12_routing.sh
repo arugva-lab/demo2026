@@ -47,7 +47,7 @@ echo "deb https://deb.frrouting.org/frr stretch frr-8" >> /etc/apt/sources.list.
 apt-get update && apt-get install frr -y --allow-unauthenticated
 sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
 systemctl restart frr
-cat >> /etc/frr/frr.conf <<EOF
+cat > /etc/frr/frr.conf <<EOF
 frr version 8.5
 frr defaults traditional
 hostname $(hostname)
@@ -79,7 +79,7 @@ echo "deb https://deb.frrouting.org/frr stretch frr-8" >> /etc/apt/sources.list.
 apt-get update && apt-get install frr -y --allow-unauthenticated
 sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
 systemctl restart frr
-cat >> /etc/frr/frr.conf <<EOF
+cat > /etc/frr/frr.conf <<EOF
 frr version 8.5
 frr defaults traditional
 hostname $(hostname)
@@ -107,9 +107,7 @@ vm_exec $ID_BR_RTR "$FRR_BR_RTR" "FRR at BR-RTR"
 DHCP_HQ_RTR='
 apt-get update && apt-get install -y isc-dhcp-server
 sed -i 's/INTERFACESv4=""/INTERFACESv4="'$HQ_IF_LAN'.200"/' /etc/default/isc-dhcp-server
-rm -f /etc/dhcp/dhcpd.conf
-touch /etc/dhcp/dhcpd.conf
-cat >> /etc/dhcp/dhcpd.conf <<EOF
+cat > /etc/dhcp/dhcpd.conf <<EOF
 option domain-name "au-team.irpo";
 option domain-name-servers 192.168.1.2, 8.8.8.8;
 default-lease-time 600;
