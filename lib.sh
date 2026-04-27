@@ -20,7 +20,7 @@ check_env() {
         HQ_IF_WAN HQ_IF_LAN
         BR_IF_WAN BR_IF_LAN
         HQ_SRV_IF HQ_CLI_IF BR_SRV_IF
-        USER_ADMIN USER_SSH PASS TIMEZONE
+      
     )
 
     for VAR in "${REQUIRED_VARS[@]}"; do
