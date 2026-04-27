@@ -51,7 +51,7 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 #NAT
 iptables -t nat -A POSTROUTING -o '$ISP_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
-iptables-save >> /etc/iptables.rules
+iptables-save > /etc/iptables.rules
 
 systemctl restart networking
 dhclient
@@ -104,7 +104,7 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$HQ_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
-iptables-save >> /etc/iptables.rules
+iptables-save > /etc/iptables.rules
 useradd -m -s /bin/bash net_admin
 echo "net_admin:P@ssw0rd" | chpasswd
 echo "net_admin ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/net_admin
@@ -134,7 +134,7 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$BR_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
-iptables-save >> /etc/iptables.rules
+iptables-save > /etc/iptables.rules
 useradd -m -s /bin/bash net_admin
 echo "net_admin:P@ssw0rd" | chpasswd
 echo "net_admin ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/net_admin
@@ -179,6 +179,7 @@ echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$HQ_SRV_IF'.100/resolv.conf
 systemctl disable --now systemd-resolved.service
 rm -f /etc/resolv.conf
 touch /etc/resolv.conf
+chmod 644 /etc/resolv.conf
 systemctl restart network
 resolvconf -u
 ip r add default via 192.168.1.1
@@ -206,8 +207,8 @@ echo "nameserver 8.8.8.8" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 systemctl disable --now systemd-resolved.service
 rm -f /etc/resolv.conf
 touch /etc/resolv.conf
+chmod 644 /etc/resolv.conf
 systemctl restart network
-chmod o+r g+r /etc/resolv.conf
 resolvconf -u
 ip r add default via 192.168.3.1
 useradd -m -u 2026 -s /bin/bash sshuser
@@ -251,7 +252,7 @@ vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "HQ-CLI"
 
 #SSH
 CMD_SSH_BR_SRV='
-apt-get install openssh-server
+apt-get install openssh-server -y
 systemctl daemon-reload
 cat >> /etc/openssh/sshd_config <<EOF
 Port 2026
@@ -268,10 +269,10 @@ systemctl enable --now sshd
 vm_exec $ID_BR_SRV "$CMD_SSH_BR_SRV" "SSH on BR-SRV"
 
 CMD_SSH_HQ_SRV='
-apt-get install openssh-server
+apt-get install openssh-server -y
 systemctl daemon-reload
 cat >> /etc/openssh/sshd_config <<EOF
-PORT 2026
+Port 2026
 MaxAuthTries 2
 PermitRootLogin no
 banner /etc/banner
@@ -288,7 +289,7 @@ vm_exec $ID_HQ_SRV "$CMD_SSH_HQ_SRV" "SSH on HQ-SRV"
 CMD_CRON_BR_SRV='
 touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
-cat >> /root/fixafterreboot.sh <<EOF
+cat > /root/fixafterreboot.sh <<EOF
 sleep 3
 systemctl restart network
 ip r add default via 192.168.3.1
@@ -306,7 +307,7 @@ vm_exec $ID_BR_SRV "$CMD_CRON_BR_SRV" "crontab br"
 CMD_CRON_HQ_SRV='
 touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
-cat >> /root/fixafterreboot.sh <<EOF
+cat > /root/fixafterreboot.sh <<EOF
 sleep 3
 systemctl restart network
 ip r add default via 192.168.1.1
@@ -322,7 +323,7 @@ vm_exec $ID_HQ_SRV "$CMD_CRON_HQ_SRV" "crontab hq"
 CMD_CRON_HQ_RTR='
 touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
-cat >> /root/fixafterreboot.sh <<EOF
+cat > /root/fixafterreboot.sh <<EOF
 sleep 3
 /sbin/iptables-restore < /etc/iptables.rules
 sysctl -w net.ipv4.ip_forward=1
@@ -337,7 +338,7 @@ vm_exec $ID_HQ_RTR "$CMD_CRON_HQ_RTR" "crontab hq"
 CMD_CRON_BR_RTR='
 touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
-cat >> /root/fixafterreboot.sh <<EOF
+cat > /root/fixafterreboot.sh <<EOF
 sleep 3
 /sbin/iptables-restore < /etc/iptables.rules
 sysctl -w net.ipv4.ip_forward=1
@@ -351,7 +352,7 @@ vm_exec $ID_BR_RTR "$CMD_CRON_BR_RTR" "crontab br"
 CMD_CRON_ISP='
 touch /root/fixafterreboot.sh
 chmod +x /root/fixafterreboot.sh
-cat >> /root/fixafterreboot.sh <<EOF
+cat > /root/fixafterreboot.sh <<EOF
 sleep 3
 /sbin/iptables-restore < /etc/iptables.rules
 dhclient
