@@ -3,6 +3,8 @@
 source ./env.sh
 source ./lib.sh
 
+check_env
+
 #chrony
 CMD_ISP_CHRONY='
 apt-get install chrony -y
