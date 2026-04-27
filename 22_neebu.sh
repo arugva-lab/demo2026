@@ -3,6 +3,7 @@
 source ./lib.sh
 source ./env.sh
 
+check_env
 
 qm set $ID_BR_SRV -scsi1 local:iso/Additional.iso,media=cdrom
 sleep 30
