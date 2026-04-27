@@ -2,7 +2,7 @@
 
 source ./env.sh
 source ./lib.sh
-
+self_destruct
 check_env 
 
 # --- HQ-RTR ---
