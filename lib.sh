@@ -8,21 +8,6 @@ vm_exec() {
         return
     fi
 
-self_destruct() {
-    trap 'rm -f "$0"' EXIT
-}
-
-check_env() {
-    local MISSING=()
-    local REQUIRED_VARS=(
-        ID_ISP ID_HQ_RTR ID_BR_RTR ID_HQ_SRV ID_HQ_CLI ID_BR_SRV
-        ISP_IF_WAN ISP_IF_HQ ISP_IF_BR
-        HQ_IF_WAN HQ_IF_LAN
-        BR_IF_WAN BR_IF_LAN
-        HQ_SRV_IF HQ_CLI_IF BR_SRV_IF
-      
-    )
-
     for VAR in "${REQUIRED_VARS[@]}"; do
         if [[ -z "${!VAR}" ]]; then
             MISSING+=("$VAR")
@@ -45,3 +30,18 @@ check_env() {
     qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER" >/dev/null 2>&1
     sleep 2
 }
+
+self_destruct() {
+    trap 'rm -f "$0"' EXIT
+}
+
+check_env() {
+    local MISSING=()
+    local REQUIRED_VARS=(
+        ID_ISP ID_HQ_RTR ID_BR_RTR ID_HQ_SRV ID_HQ_CLI ID_BR_SRV
+        ISP_IF_WAN ISP_IF_HQ ISP_IF_BR
+        HQ_IF_WAN HQ_IF_LAN
+        BR_IF_WAN BR_IF_LAN
+        HQ_SRV_IF HQ_CLI_IF BR_SRV_IF
+      
+    )
