@@ -3,6 +3,8 @@
 source ./env.sh
 source ./lib.sh
 
+check_env 
+
 # --- HQ-RTR ---
 
 # GRE
