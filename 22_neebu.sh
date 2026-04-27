@@ -31,7 +31,7 @@ services:
       - db
     ports:
       - 8080:8000
-    environment:Ф
+    environment:
       DB_TYPE: maria
       DB_HOST: db
       DB_NAME: testdb
