@@ -6,7 +6,7 @@ self_destruct
 check_env
 
 qm set $ID_BR_SRV -scsi1 local:iso/Additional.iso,media=cdrom
-sleep 30
+sleep 10
 CMD_DOCKER='
 for host in /sys/class/scsi_host/host*; do
         echo "- - -" > "$host/scan"
@@ -31,8 +31,7 @@ services:
       - db
     ports:
       - 8080:8000
-    environment:
-
+    environment:Ф
       DB_TYPE: maria
       DB_HOST: db
       DB_NAME: testdb
@@ -63,7 +62,7 @@ vm_exec $ID_BR_SRV "$CMD_DOCKER" "test docker"
 
 
 qm set $ID_HQ_SRV -scsi3 local:iso/Additional.iso,media=cdrom
-
+sleep 10
 CMD_WEB="
 for host in /sys/class/scsi_host/host*; do
         echo '- - -' > '$host/scan'
@@ -146,8 +145,8 @@ server {
         }
 }
 EOF
-systemctl restart nginx
 ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+systemctl restart nginx
 "
 
 vm_exec $ID_ISP "$CMD_NGINX" "test proxy and auth"
