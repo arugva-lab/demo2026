@@ -2,7 +2,7 @@
 
 source ./lib.sh
 source ./env.sh
-
+self_destruct
 check_env
 
 qm set $ID_BR_SRV -scsi1 local:iso/Additional.iso,media=cdrom
