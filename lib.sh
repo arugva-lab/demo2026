@@ -7,6 +7,11 @@ vm_exec() {
         echo " AGENT IS NOT AVAILABLE AT $VMID"
         return
     fi
+
+self_destruct() {
+    trap 'rm -f "$0"' EXIT
+}
+
 check_env() {
     local MISSING=()
     local REQUIRED_VARS=(
