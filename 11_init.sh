@@ -26,7 +26,7 @@ vm_exec $ID_HQ_CLI "$CMD_CHECK_DIS" "disable check time"
 #--- 1.1 ISP --- 
 CMD_ISP_NET='
 hostnamectl set-hostname isp.au-team.irpo
-timedatectl set-timezone '$TIMEZONE'
+timedatectl set-timezone Asia/Yekaterinburg
 cat > /etc/network/interfaces << EOF
 auto lo
 iface lo inet loopback
@@ -57,8 +57,9 @@ systemctl restart networking
 dhclient
 '
 CMD_ISP_USER='
-useradd -m -s /bin/bash '$USER_ADMIN'
-echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/'$USER_ADMIN'
+useradd -m -s /bin/bash net_admin
+echo "net_admin:P@ssw0rd" | chpasswd
+echo "net_admin ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/net_admin
 '
 vm_exec $ID_ISP "$CMD_ISP_NET" "ISP net"
 vm_exec $ID_ISP "$CMD_ISP_USER" "ISP user"
@@ -66,7 +67,7 @@ vm_exec $ID_ISP "$CMD_ISP_USER" "ISP user"
 # --- 1.2 HQ-RTR ---
 CMD_HQ_RTR='
 hostnamectl set-hostname hq-rtr.au-team.irpo
-timedatectl set-timezone '$TIMEZONE'
+timedatectl set-timezone Asia/Yekaterinburg
 modprobe 8021q
 echo "8021q" >> /etc/modules
 
@@ -104,16 +105,16 @@ systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$HQ_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save >> /etc/iptables.rules
-useradd -m -s /bin/bash '$USER_ADMIN'
-echo "'$USER_ADMIN':'$PASS'" | chpasswd
-echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
+useradd -m -s /bin/bash net_admin
+echo "net_admin:P@ssw0rd" | chpasswd
+echo "net_admin ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/net_admin
 '
 vm_exec $ID_HQ_RTR "$CMD_HQ_RTR" "HQ-RTR"
 
 #  --- BR-RTR ---
 CMD_BR_RTR='
 hostnamectl set-hostname br-rtr.au-team.irpo
-timedatectl set-timezone '$TIMEZONE'
+timedatectl set-timezone Asia/Yekaterinburg
 cat > /etc/network/interfaces <<EOF
 auto lo
 iface lo inet loopback
@@ -134,16 +135,16 @@ systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$BR_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save >> /etc/iptables.rules
-useradd -m -s /bin/bash '$USER_ADMIN'
-echo "'$USER_ADMIN':'$PASS'" | chpasswd
-echo "'$USER_ADMIN' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_ADMIN'
+useradd -m -s /bin/bash net_admin
+echo "net_admin:P@ssw0rd" | chpasswd
+echo "net_admin ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/net_admin
 '
 vm_exec $ID_BR_RTR "$CMD_BR_RTR" "BR-RTR"
 
 #   --- 2.1 HQ-SRV ---
 CMD_HQ_SRV='
 hostnamectl set-hostname hq-srv.au-team.irpo
-timedatectl set-timezone '$TIMEZONE'
+timedatectl set-timezone Asia/Yekaterinburg
 mkdir -p /etc/net/ifaces/'$HQ_SRV_IF'.100
 cat << eof > /etc/net/ifaces/'$HQ_SRV_IF'/options
 TYPE=eth
@@ -166,9 +167,9 @@ EOF
 cat << EOF >  /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4route
 192.168.1.1
 EOF
-useradd -m -u 2026 -s /bin/bash '$USER_SSH'
-echo "'$USER_SSH':'$PASS'" | chpasswd
-echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
+useradd -m -u 2026 -s /bin/bash sshuser
+echo "sshuser:P@ssw0rd" | chpasswd
+echo "sshuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sshuser
 chmod 4755 /usr/bin/sudo
 
 sed -i 's/127.0.0.53//' /etc/resolvconf.conf
@@ -188,7 +189,7 @@ vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "HQ-SRV"
 # --- 2.2 BR-SRV---
 CMD_BR_SRV='
 hostnamectl set-hostname br-srv.au-team.irpo
-timedatectl set-timezone '$TIMEZONE'
+timedatectl set-timezone Asia/Yekaterinburg
 mkdir -p /etc/net/ifaces/'$BR_SRV_IF'
 cat << eof >  /etc/net/ifaces/'$BR_SRV_IF'/options
 TYPE=eth
@@ -209,18 +210,19 @@ systemctl restart network
 chmod o+r g+r /etc/resolv.conf
 resolvconf -u
 ip r add default via 192.168.3.1
-useradd -m -u 2026 -s /bin/bash '$USER_SSH'
-echo "'$USER_SSH':'$PASS'" | chpasswd
-echo "'$USER_SSH' ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/'$USER_SSH'
+useradd -m -u 2026 -s /bin/bash sshuser
+echo "sshuser:P@ssw0rd" | chpasswd
+echo "sshuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sshuser
 chmod 4755 /usr/bin/sudo
 '
+
 vm_exec $ID_BR_SRV "$CMD_BR_SRV" "BR-SRV"
 
 # --- 3.1 HQ-CLI ---
 
 CMD_HQ_CLI='
 hostnamectl set-hostname hq-cli.au-team.irpo
-timedatectl set-timezone '$TIMEZONE'
+timedatectl set-timezone Asia/Yekaterinburg
 mkdir -p /etc/net/ifaces/'$HQ_CLI_IF'
 mkdir -p /etc/net/ifaces/'$HQ_CLI_IF'.200
 
