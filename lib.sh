@@ -33,6 +33,9 @@ self_destruct() {
             echo "===================" >&3
         else
             rm -f "$0"
+            if [[ ! -f ./22_neebu.sh ]]; then
+                rm -f ./env.sh ./lib.sh
+            fi
         fi' EXIT
 }
 
