@@ -2,6 +2,8 @@ vm_exec() {
     local VMID=$1
     local CMD=$2
     local DESC=$3
+
+    #echo "[$VMID] $DESC..."
     
     if ! qm agent $VMID ping >/dev/null 2>&1; then
         echo " AGENT IS NOT AVAILABLE AT $VMID"
@@ -13,21 +15,22 @@ vm_exec() {
     local B64_CMD=$(echo "$FULL_CMD" | base64 -w0)
     local WRAPPER="echo $B64_CMD | base64 -d | /bin/bash"
 
-    qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER" >/dev/null 2>&1
+    qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER"  #>/dev/null 2>&1
     sleep 2
 }
 
 self_destruct() {
     local LOG="/var/log/demo2026_$(basename $0).log"
-    exec 2>"$LOG"
+    exec 3>&1
+    exec &>"$LOG"
     trap '_exit_code=$?
         if [[ $_exit_code -ne 0 ]]; then
-            echo ""
-            echo "=== СКРИПТ УПАЛ ==="
-            echo "Exit code: $_exit_code"
-            echo "Строка: $LINENO"
-            echo "Посмотреть лог можно командой: cat $LOG"
-            echo "==================="
+            echo "" >&3
+            echo "=== СКРИПТ УПАЛ ===" >&3
+            echo "Exit code: $_exit_code" >&3
+            echo "Строка: $LINENO" >&3
+            echo "Посмотреть лог можно командой: cat $LOG" >&3
+            echo "===================" >&3
         else
             rm -f "$0"
         fi' EXIT
