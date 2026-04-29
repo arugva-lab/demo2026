@@ -14,23 +14,23 @@ ID_BR_SRV=
 #put interface names inside quotes
 
 # --- ISP ---
-ISP_IF_WAN=""   # v internet (NAT)
-ISP_IF_HQ=""    # v storonu HQ-RTR
-ISP_IF_BR=""    # v storonu BR-RTR
+ISP_IF_WAN="eth0"   # v internet (NAT)
+ISP_IF_HQ="eth1"    # v storonu HQ-RTR
+ISP_IF_BR="eth2"    # v storonu BR-RTR
 
 # --- HQ-RTR ---
-HQ_IF_WAN=""    # v storonu ISP
-HQ_IF_LAN=""    # LAN
+HQ_IF_WAN="eth0"    # v storonu ISP
+HQ_IF_LAN="eth1"    # LAN
 
 # --- BR-RTR ---
-BR_IF_WAN=""    # v storonu ISP
-BR_IF_LAN=""    # LAN сеть
+BR_IF_WAN="eth0"    # v storonu ISP
+BR_IF_LAN="eth1"    # LAN сеть
 
 # --- HQ-SRV ---
-HQ_SRV_IF=""
+HQ_SRV_IF="ens18"
 
 # --- HQ-CLI ----
-HQ_CLI_IF=""
+HQ_CLI_IF="ens18"
 
 # ---BR-SRV ---
-BR_SRV_IF=""
+BR_SRV_IF="ens18"
