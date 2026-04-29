@@ -18,7 +18,19 @@ vm_exec() {
 }
 
 self_destruct() {
-    trap 'rm -f "$0"' EXIT
+    local LOG="/var/log/demo2026_$(basename $0).log"
+    exec 2>"$LOG"
+    trap '_exit_code=$?
+        if [[ $_exit_code -ne 0 ]]; then
+            echo ""
+            echo "=== СКРИПТ УПАЛ ==="
+            echo "Exit code: $_exit_code"
+            echo "Строка: $LINENO"
+            echo "Посмотреть лог можно командой: cat $LOG"
+            echo "==================="
+        else
+            rm -f "$0"
+        fi' EXIT
 }
 
 check_env() {
