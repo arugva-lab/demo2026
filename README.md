@@ -23,9 +23,9 @@
 | Провайдер | `ISP` | Astra Linux | NAT, NTP, Nginx (Reverse Proxy + Web Auth) |
 | Роутер HQ | `HQ-RTR` | Astra Linux | OSPF, NAT, VLAN, GRE, DHCP |
 | Роутер BR | `BR-RTR` | Astra Linux | OSPF, NAT, GRE |
-| Сервер HQ | `HQ-SRV` | Alt Server 10.4 | RAID0, NFS, LAMP (Apache + MariaDB) |
+| Сервер HQ | `HQ-SRV` | Alt Server | RAID0, NFS, LAMP (Apache + MariaDB) |
 | Клиент HQ | `HQ-CLI` | Alt Workstation | Ввод в домен, NFS-клиент, браузер |
-| Сервер BR | `BR-SRV` | Alt Server 10.4 | Samba DC (AD), Docker, Ansible |
+| Сервер BR | `BR-SRV` | Alt Server | Samba DC (AD), Docker, Ansible |
 
 ---
 
