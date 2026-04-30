@@ -15,6 +15,9 @@ vm_exec() {
     local RESULT
     RESULT=$(qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER")
     sleep 2
+
+    echo "[$VMID] ... $DESC"
+    echo "$RESULT"
     
     local EXIT_CODE
     EXIT_CODE=$(echo "$RESULT" | grep -oP '"exitcode"\s*:\s*\K[0-9]+')
@@ -27,7 +30,7 @@ vm_exec() {
 }
 
 self_destruct() {
-    local LOG="/var/log/demo2026_$(basename $0).log"
+    LOG="/var/log/demo2026_$(basename $0).log"
     exec 3>&1
     exec &>"$LOG"
     trap '_exit_code=$?
@@ -35,7 +38,6 @@ self_destruct() {
             echo "" >&3
             echo "=== СКРИПТ УПАЛ ===" >&3
             echo "Exit code: $_exit_code" >&3
-            echo "Строка: $LINENO" >&3
             echo "Посмотреть лог можно командой: cat $LOG" >&3
             echo "===================" >&3
         else
