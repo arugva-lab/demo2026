@@ -3,20 +3,27 @@ vm_exec() {
     local CMD=$2
     local DESC=$3
 
-    #echo "[$VMID] $DESC..."
-    
     if ! qm agent $VMID ping >/dev/null 2>&1; then
-        echo " AGENT IS NOT AVAILABLE AT $VMID"
-        return
+        echo "AGENT IS NOT AVAILABLE AT $VMID" >&2
+        return 1
     fi
 
-    # english error
     local FULL_CMD="export LC_ALL=C; $CMD"
     local B64_CMD=$(echo "$FULL_CMD" | base64 -w0)
     local WRAPPER="echo $B64_CMD | base64 -d | /bin/bash"
-
-    qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER"  #>/dev/null 2>&1
+    
+    local RESULT
+    RESULT=$(qm guest exec $VMID --timeout 600 -- /bin/bash -c "$WRAPPER")
     sleep 2
+    
+    local EXIT_CODE
+    EXIT_CODE=$(echo "$RESULT" | grep -oP '"exitcode"\s*:\s*\K[0-9]+')
+    if [[ "$EXIT_CODE" != "0" ]]; then
+        local ERR
+        ERR=$(echo "$RESULT" | grep -oP '"err-data"\s*:\s*"\K[^"]+')
+        echo "[$VMID] $DESC — ОШИБКА (exitcode $EXIT_CODE): $ERR" >&2
+        return 1
+    fi
 }
 
 self_destruct() {
