@@ -29,7 +29,7 @@ exit
 router ospf
  passive-interface default
  no passive-interface gre1
- network 10.10.10.0/30 area 0
+ network 10.0.0.0/30 area 0
  network 192.168.1.0/27 area 0
  network 192.168.2.0/28 area 0
 exit
@@ -62,7 +62,7 @@ exit
 router ospf
  passive-interface default
  no passive-interface gre1
- network 10.10.10.0/30 area 0
+ network 10.0.0.0/30 area 0
  network 192.168.3.0/27 area 0
 exit
 !
