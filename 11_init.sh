@@ -97,6 +97,15 @@ auto '$HQ_IF_LAN'.999
 iface '$HQ_IF_LAN'.999 inet static
    address 192.168.99.1/29
    vlan-raw-device '$HQ_IF_LAN'
+
+auto gre1
+iface gre1 inet tunnel
+	address 10.0.0.1
+	netmask 255.255.255.252
+	mode gre
+	local 172.16.2.2
+	endpoint 172.16.1.2
+	ttl 255
 EOF
 
 sysctl -w net.ipv4.ip_forward=1
@@ -127,6 +136,15 @@ iface '$BR_IF_WAN' inet static
 auto '$BR_IF_LAN'
 iface '$BR_IF_LAN' inet static
 	address 192.168.3.1/28
+
+auto gre1
+iface gre1 inet tunnel
+	address 10.0.0.1
+	netmask 255.255.255.252
+	mode gre
+	local 172.16.2.2
+	endpoint 172.16.1.2
+	ttl 255
 EOF
 
 sysctl -w net.ipv4.ip_forward=1
