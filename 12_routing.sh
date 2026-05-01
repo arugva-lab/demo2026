@@ -5,41 +5,6 @@ source ./lib.sh
 self_destruct
 check_env 
 
-# --- HQ-RTR ---
-
-# GRE
-GRE_HQ_RTR='
-cat >> /etc/network/interfaces << EOF
-
-auto gre1
-iface gre1 inet static
-    address 10.10.10.1
-    netmask 255.255.255.252
-    pre-up ip tunnel add gre1 mode gre remote 172.16.2.2 local 172.16.1.2 ttl 255
-    up ip link set gre1 up
-    post-down ip tunnel del gre1
-EOF
-ifup gre1
-'
-vm_exec $ID_HQ_RTR "$GRE_HQ_RTR" "GRE & NAT on HQ-RTR"
-
-# --- BR-RTR ---
-
-GRE_BR_RTR='
-#GRE
-cat >> /etc/network/interfaces << EOF
-auto gre1
-iface gre1 inet static
-    address 10.10.10.2
-    netmask 255.255.255.252
-    pre-up ip tunnel add gre1 mode gre remote 172.16.1.2 local 172.16.2.2 ttl 255
-    up ip link set gre1 up
-    post-down ip tunnel del gre1
-EOF
-ifup gre1
-'
-vm_exec $ID_BR_RTR "$GRE_BR_RTR"  "GRE & NAT on BR-RTR"
-
 #FRR ON BR-RTR & HQ-RTR
 FRR_HQ_RTR='
 touch /etc/apt/sources.list.d/frr.list
