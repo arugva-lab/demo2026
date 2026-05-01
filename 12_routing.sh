@@ -130,107 +130,29 @@ vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "get address on HQ-CLI"
 
 # 5. DNS AT HQ-SRV
 DNS_HQ_SRV="
-touch /etc/apt/sources.list.d/demo2026.list
-echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64 classic gostcrypto' >> /etc/apt/sources.list.d/demo2026.list
-echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/x86_64-i586 classic' >> /etc/apt/sources.list.d/demo2026.list
-echo 'rpm [p10] http://mirror.yandex.ru/altlinux p10/branch/noarch classic' >> /etc/apt/sources.list.d/demo2026.list
-apt-get update && apt-get install bind bind-utils -y
-cat > /etc/bind/options.conf <<EOF
-options {
-    directory \"/etc/bind/zone\";
-    dump-file \"/var/run/named/named_dump.db\";
-    statistics-file \"/var/run/named/named.stats\";
-    listen-on { any; };
-    allow-query { any; };
-    recursion yes;
-    allow-recursion { any; };
-    allow-query-cache { any; };
-    forwarders { 8.8.8.8; };
-    dnssec-validation no;
-};
-
-logging {
-    category default { default_syslog; };
-    category general { default_syslog; };
-};
+apt-get update && apt-get install dnsmasq -y
+cat > /etc/dnsmasq.conf <<EOF
+expand-hosts
+localise-queries
+conf-dir=/etc/dnsmasq.conf.d
+interface=*
+server=/au-team.irpo/192.168.3.2
+server=8.8.8.8
+domain=au-team. irpo
+listen-address=192.168.1.2
+no-resolv
+no-hosts
+address=/hq-rtr.au-team.irpo/192.168.1.1
+ptr-record=1.1.168.192.in.addr.arpa,hq-rtr.au-team.irpo
+address=/br-rtr.au-team.irpo/192.168.3.1
+address=/hq-srv.au-team.irpo/192.168.1.2
+ptr-record=3.1.168.192.in.addr.arpa.hq-srv.au-team.irpo
+address=/hq-cli.au-team.irpo/192.168.2.2
+ptr-record=2.2.168.192.in.addr.arpa,hq-cli.au-team.irpo
+address=/br-srv.au-team.irpo/192.168.3.2
+address=/docker.au-team.irpo/172.16.1.1
+address=/web.au-team.irpo/172.16.2.1
 EOF
-
-cat >> /etc/bind/local.conf <<'EOF'
-
-zone \"au-team.irpo\" {
-    type master;
-    file \"/etc/bind/db.au-team.irpo\";
-};
-zone \"1.168.192.in-addr.arpa\" {
-    type master;
-    file \"/etc/bind/db.1.168.192.in-addr.arpa\";
-};
-zone \"2.168.192.in-addr.arpa\" {
-    type master;
-    file \"/etc/bind/db.2.168.192.in-addr.arpa\";
-};
-EOF
-touch /etc/bind/db.au-team.irpo
-cat > /etc/bind/db.au-team.irpo <<'EOF'
-\$TTL 86400
-@   IN  SOA ns.au-team.irpo. admin.au-team.irpo. (
-            2025020103 ; Serial
-            3600       ; Refresh
-            1800       ; Retry
-            604800     ; Expire
-            86400 )    ; Minimum
-
-@       IN  NS      ns.au-team.irpo.
-ns      IN  A       192.168.1.2
-hq-srv  IN  A       192.168.1.2
-br-srv  IN  A       192.168.3.2
-hq-rtr  IN  A       192.168.1.1
-br-rtr  IN  A       192.168.3.1
-hq-cli	IN  A       192.168.2.2
-web     IN  A       172.16.2.1
-docker  IN  A       172.16.1.1
-
-;DNS for DC
-_ldap._tcp               600 IN SRV 0 100 389   br-srv
-_kerberos._tcp           600 IN SRV 0 100 88    br-srv
-_kerberos._udp           600 IN SRV 0 100 88    br-srv
-_ldap._tcp.dc._msdcs     600 IN SRV 0 100 389   br-srv
-_ldap._tcp.gc._msdcs     600 IN SRV 0 100 3268  br-srv
-EOF
-touch /etc/bind/db.1.168.192.in-addr.arpa
-cat > /etc/bind/db.1.168.192.in-addr.arpa <<'EOF'
-\$TTL 1D
-@  IN  SOA ns.au-team.irpo admin.au-team.irpo (
-           2025291603 ; Serial
-           3600       ; Refresh
-           1800       ; Retry
-           604800     ; Expire
-           86400 )    ; Minimum
-        IN  NS      ns.au-team.irpo.
-1       IN  PTR     hq-rtr.au-team.irpo.
-2       IN  PTR     hq-srv.au-team.irpo.
-EOF
-touch /etc/bind/db.2.168.192.in-addr.arpa
-cat > /etc/bind/db.2.168.192.in-addr.arpa <<'EOF'
-\$TTL 1D
-@  IN  SOA ns.au-team.irpo admin.au-team.irpo (
-           2025291603 ; Serial
-           3600       ; Refresh
-           1800       ; Retry
-           604800     ; Expire
-           86400 )    ; Minimum
-        IN  NS      ns.au-team.irpo.
-1       IN  PTR     hq-rtr.au-team.irpo.
-2       IN  PTR     hq-cli.au-team.irpo.
-EOF
-chown root:named /etc/bind/db.au-team.irpo
-chown root:named /etc/bind/db.1.168.192.in-addr.arpa
-chown root:named /etc/bind/db.2.168.192.in-addr.arpa
-chmod 640 /etc/bind/db.au-team.irpo
-chmod 640 /etc/bind/db.1.168.192.in-addr.arpa
-chmod 640 /etc/bind/db.2.168.192.in-addr.arpa
-systemctl enable --now bind
-systemctl restart bind
-"
+systemctl restart dnsmasq
 vm_exec $ID_HQ_SRV "$DNS_HQ_SRV" "DNS server HQ-SRV"
 echo " MODULE 1-02 COMPLETE"
