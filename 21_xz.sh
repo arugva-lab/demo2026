@@ -159,20 +159,11 @@ CMD_ANS_TEST='
 apt-get update && apt-get install ansible sshpass -y
 cat > /etc/ansible/hosts <<EOF
 [clients]
-hq-rtr	ansible_host=192.168.1.1	ansible_user=net_admin	ansible_port=2026
-br-rtr	ansible_host=192.168.3.1	ansible_user=net_admin	ansible_port=2026
-hq-srv	ansible_host=192.168.1.2	ansible_user=sshuser	ansible_port=2026
-hq-cli	ansible_host=192.168.2.2	ansible_user=sshuser	ansible_port=2026
+hq-rtr	ansible_host=192.168.1.1	ansible_user=net_admin	ansible_port=2026    ansible_password=P@ssw0rd
+br-rtr	ansible_host=192.168.3.1	ansible_user=net_admin	ansible_port=2026    ansible_password=P@ssw0rd
+hq-srv	ansible_host=192.168.1.2	ansible_user=sshuser	ansible_port=2026    ansible_password=P@ssw0rd
+hq-cli	ansible_host=192.168.2.2	ansible_user=sshuser	ansible_port=2026    ansible_password=P@ssw0rd
 EOF
-
-if [ ! -f /root/.ssh/id_rsa ]; then
-    ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
-fi
-
-sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 net_admin@192.168.1.1
-sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 net_admin@192.168.3.1
-sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 sshuser@192.168.1.2
-sshpass -p "P@ssw0rd" ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub -p 2026 sshuser@192.168.2.2
 cat > /etc/ansible/ansible.cfg <<EOF
 [defaults]
 interpreter_python = python3
