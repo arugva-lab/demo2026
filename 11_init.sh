@@ -103,8 +103,8 @@ iface gre1 inet tunnel
 	address 10.0.0.1
 	netmask 255.255.255.252
 	mode gre
-	local 172.16.2.2
-	endpoint 172.16.1.2
+	local 172.16.1.2
+	endpoint 172.16.2.2
 	ttl 255
 EOF
 
