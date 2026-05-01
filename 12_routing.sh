@@ -154,5 +154,6 @@ address=/docker.au-team.irpo/172.16.1.1
 address=/web.au-team.irpo/172.16.2.1
 EOF
 systemctl restart dnsmasq
+systemctl enable dnsmasq
 vm_exec $ID_HQ_SRV "$DNS_HQ_SRV" "DNS server HQ-SRV"
 echo " MODULE 1-02 COMPLETE"
