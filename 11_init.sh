@@ -139,7 +139,7 @@ iface '$BR_IF_LAN' inet static
 
 auto gre1
 iface gre1 inet tunnel
-	address 10.0.0.1
+	address 10.0.0.2
 	netmask 255.255.255.252
 	mode gre
 	local 172.16.2.2
