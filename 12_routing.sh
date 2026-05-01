@@ -23,6 +23,7 @@ service integrated-vtysh-config
 interface gre1
  ip ospf authentication message-digest
  ip ospf message-digest-key 1 md5 demo2026
+ ip ospf network broadcast
 exit
 !
 router ospf
@@ -55,6 +56,7 @@ service integrated-vtysh-config
 interface gre1
  ip ospf authentication message-digest
  ip ospf message-digest-key 1 md5 demo2026
+ ip ospf network broadcast
 exit
 !
 router ospf
