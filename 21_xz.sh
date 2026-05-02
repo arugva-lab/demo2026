@@ -124,13 +124,7 @@ vm_exec $ID_HQ_CLI "$CMD_NFS_HQ_CLI" "test nfs client"
 CMD_SSH_TEST='
 apt-get update && apt-get install openssh-server -y
 systemctl daemon-reload
-cat >> /etc/ssh/sshd_config <<EOF
-Port 2026
-MaxAuthTries 2
-PermitRootLogin no
-AllowUsers net_admin
-EOF
-systemctl restart sshd
+systemctl enable --now sshd
 '
 vm_exec $ID_HQ_RTR "$CMD_SSH_TEST" "ssh hq-rtr"
 vm_exec $ID_BR_RTR "$CMD_SSH_TEST" "ssh br-rtr"
@@ -142,13 +136,7 @@ systemctl daemon-reload
 useradd sshuser -u 2026
 echo "sshuser:P@ssw0rd" | chpasswd
 usermod -aG wheel sshuser
-cat >> /etc/openssh/sshd_config <<EOF
-Port 2026
-MaxAuthTries 2
-PermitRootLogin no
-AllowUsers sshuser
-EOF
-systemctl restart sshd
+systemctl enable --now  sshd
 touch /etc/sudoers.d/wheel
 echo "WHEEL_USERS	ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/wheel
 '
@@ -159,10 +147,10 @@ CMD_ANS_TEST='
 apt-get update && apt-get install ansible sshpass -y
 cat > /etc/ansible/hosts <<EOF
 [clients]
-hq-rtr	ansible_host=192.168.1.1	ansible_user=net_admin	ansible_port=2026    ansible_password=P@ssw0rd
-br-rtr	ansible_host=192.168.3.1	ansible_user=net_admin	ansible_port=2026    ansible_password=P@ssw0rd
+hq-rtr	ansible_host=192.168.1.1	ansible_user=net_admin	ansible_port=22   ansible_password=P@ssw0rd
+br-rtr	ansible_host=192.168.3.1	ansible_user=net_admin	ansible_port=22    ansible_password=P@ssw0rd
 hq-srv	ansible_host=192.168.1.2	ansible_user=sshuser	ansible_port=2026    ansible_password=P@ssw0rd
-hq-cli	ansible_host=192.168.2.2	ansible_user=sshuser	ansible_port=2026    ansible_password=P@ssw0rd
+hq-cli	ansible_host=192.168.2.2	ansible_user=sshuser	ansible_port=22    ansible_password=P@ssw0rd
 EOF
 cat > /etc/ansible/ansible.cfg <<EOF
 [defaults]
