@@ -122,8 +122,6 @@ vm_exec $ID_HQ_CLI "$CMD_NFS_HQ_CLI" "test nfs client"
 # --- ANSIBLE ---
 #ssh at hq,br-rtr
 CMD_SSH_TEST='
-apt-get update && apt-get install openssh-server -y
-systemctl daemon-reload
 systemctl enable --now sshd
 '
 vm_exec $ID_HQ_RTR "$CMD_SSH_TEST" "ssh hq-rtr"
