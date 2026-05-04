@@ -183,7 +183,7 @@ cat << EOF >  /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4address
 EOF
 
 cat << EOF >  /etc/net/ifaces/'$HQ_SRV_IF'.100/ipv4route
-192.168.1.1
+default via 192.168.1.1
 EOF
 useradd -m -u 2026 -s /bin/bash sshuser
 echo "sshuser:P@ssw0rd" | chpasswd
@@ -217,7 +217,7 @@ ONBOOT=yes
 DISABLED=no
 eof
 echo  "192.168.3.2/28" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4address
-echo  "192.168.3.1" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4route
+echo  "default via 192.168.3.1" > /etc/net/ifaces/'$BR_SRV_IF'/ipv4route
 sed -i 's/127.0.0.53//' /etc/resolvconf.conf
 touch /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
 echo "nameserver 192.168.1.2" >> /etc/net/ifaces/'$BR_SRV_IF'/resolv.conf
