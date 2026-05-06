@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 source ./lib.sh
 source ./env.sh
 self_destruct
