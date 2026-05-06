@@ -9,7 +9,8 @@ check_env
 FRR_HQ_RTR='
 touch /etc/apt/sources.list.d/frr.list
 echo "deb https://deb.frrouting.org/frr stretch frr-8" >> /etc/apt/sources.list.d/frr.list
-apt-get update && apt-get install frr -y --allow-unauthenticated
+apt-get update --allow-insecure-repositories 2>/dev/null || true
+apt-get install frr -y --allow-unauthenticated
 sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
 systemctl restart frr
 cat > /etc/frr/frr.conf <<EOF
