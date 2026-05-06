@@ -97,7 +97,7 @@ vm_exec $ID_HQ_CLI "$CMD_HQ_CLI" "get address on HQ-CLI"
 
 # 5. DNS AT HQ-SRV
 DNS_HQ_SRV="
-apt-get update && apt-get install dnsmasq -y
+apt-get install dnsmasq -y
 cat > /etc/dnsmasq.conf <<EOF
 expand-hosts
 localise-queries
