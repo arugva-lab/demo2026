@@ -72,7 +72,7 @@ systemctl restart frr
 vm_exec $ID_BR_RTR "$FRR_BR_RTR" "FRR at BR-RTR"
 # 4. DHCP ON HQ-RTR (VLAN 200)
 DHCP_HQ_RTR='
-pt-get install -y isc-dhcp-server
+apt-get install -y isc-dhcp-server
 sed -i 's/INTERFACESv4=""/INTERFACESv4="'$HQ_IF_LAN'.200"/' /etc/default/isc-dhcp-server
 cat > /etc/dhcp/dhcpd.conf <<EOF
 option domain-name "au-team.irpo";
