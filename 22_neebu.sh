@@ -5,7 +5,6 @@ source ./env.sh
 self_destruct
 check_env
 
-qm set $ID_BR_SRV -scsi1 local:iso/Additional.iso,media=cdrom
 sleep 10
 CMD_DOCKER='
 for host in /sys/class/scsi_host/host*; do
@@ -14,7 +13,7 @@ done
 apt-get update && apt-get install docker-engine docker-compose -y
 systemctl enable --now docker
 mkdir -p /mnt/add_cd
-mount -t auto -o ro /dev/sr1 /mnt/add_cd
+mount -t auto -o ro /dev/sr0 /mnt/add_cd
 mkdir -p /root/docker/
 cp -r /mnt/add_cd/docker /root/
 docker image load -i /root/docker/site_latest.tar
