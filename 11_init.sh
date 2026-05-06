@@ -115,6 +115,7 @@ iptables -t nat -A POSTROUTING -o '$HQ_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save > /etc/iptables.rules
 useradd -m -s /bin/bash net_admin
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 echo "net_admin:P@ssw0rd" | chpasswd
 echo "net_admin ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/net_admin
 '
