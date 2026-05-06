@@ -200,7 +200,6 @@ touch /etc/resolv.conf
 chmod 644 /etc/resolv.conf
 systemctl restart network
 resolvconf -u
-ip r add default via 192.168.1.1
 '
 vm_exec $ID_HQ_SRV "$CMD_HQ_SRV" "HQ-SRV"
 
@@ -228,7 +227,6 @@ touch /etc/resolv.conf
 chmod 644 /etc/resolv.conf
 systemctl restart network
 resolvconf -u
-ip r add default via 192.168.3.1
 useradd -m -u 2026 -s /bin/bash sshuser
 echo "sshuser:P@ssw0rd" | chpasswd
 echo "sshuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sshuser
