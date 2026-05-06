@@ -52,7 +52,7 @@ echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 iptables -t nat -A POSTROUTING -o '$ISP_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
 iptables-save > /etc/iptables.rules
-
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 systemctl restart networking
 dhclient
 '
@@ -150,6 +150,7 @@ EOF
 
 sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 systemctl restart networking
 iptables -t nat -A POSTROUTING -o '$BR_IF_WAN' -j MASQUERADE
 touch /etc/iptables.rules
