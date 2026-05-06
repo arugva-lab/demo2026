@@ -75,8 +75,6 @@ control sudo public
 vm_exec $ID_HQ_CLI "$CMD_DC_HQ_CLI" "test samba"
 
 #File storage
-qm set "$ID_HQ_SRV" --scsi1 local-lvm:1
-qm set "$ID_HQ_SRV" --scsi2 local-lvm:1
 CMD_RAID_HQ_SRV='
 sleep 10
 mdadm --create /dev/md0 --level=0 --raid-device=2 /dev/sdb /dev/sdc --run
