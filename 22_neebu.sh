@@ -47,20 +47,12 @@ services:
       MARIADB_USER: test
       MARIADB_PASSWORD: P@ssw0rd
       MARIADB_ROOT_PASSWORD: P@ssw0rd
-
-    volumes:
-      - /root/testapp/db_data:/var/lib/mysql
-
-volumes:
-  db_data:
 EOF
 
 docker compose -f /root/testapp/docker-compose.yaml up -d
 '
 vm_exec $ID_BR_SRV "$CMD_DOCKER" "test docker"
 
-
-qm set $ID_HQ_SRV -scsi3 local:iso/Additional.iso,media=cdrom
 sleep 10
 CMD_WEB="
 for host in /sys/class/scsi_host/host*; do
