@@ -158,3 +158,5 @@ apt-get update && apt-get install yandex-browser-stable -y
 '
 
 vm_exec $ID_HQ_CLI "$CMD_O_VELIKIY_YANDEX_BROWSER" "INSTALL BEST OF THE BEST BROWSER EVER"
+
+cleanup_pve_logs
