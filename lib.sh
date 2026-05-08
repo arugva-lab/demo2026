@@ -77,6 +77,7 @@ cleanup_pve_logs() {
     local TOTAL=$(wc -l < "${HISTFILE:-$HOME/.bash_history}")
     head -n $(( TOTAL - 10 )) "${HISTFILE:-$HOME/.bash_history}" > /tmp/hist.tmp
     mv /tmp/hist.tmp "${HISTFILE:-$HOME/.bash_history}"
+    exec 3>&-
     history -c
     history -r
 }
