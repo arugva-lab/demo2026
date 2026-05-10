@@ -107,7 +107,7 @@ conf-dir=/etc/dnsmasq.conf.d
 interface=*
 server=/au-team.irpo/192.168.3.2
 server=8.8.8.8
-domain=au-team. irpo
+domain=au-team.irpo
 listen-address=192.168.1.2
 no-resolv
 no-hosts
