@@ -83,7 +83,7 @@ default-lease-time 600;
 max-lease-time 7200;
 authoritative;
 subnet 192.168.2.0 netmask 255.255.255.240 {
-  range 192.168.2.2 192.168.2.5;
+  range 192.168.2.2 192.168.2.2;
   option routers 192.168.2.1;
 }
 EOF
