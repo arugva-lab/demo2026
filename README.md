@@ -1,9 +1,9 @@
 # Автоматизация Демонстрационного Экзамена 2026
 ### Сетевое и системное администрирование
 
-![Bash](https://img.shields.io/badge/Language-Bash-4EAA25?style=flat-square&logo=gnu-bash&logoColor=white)
-![Proxmox](https://img.shields.io/badge/Platform-Proxmox_VE-E57000?style=flat-square&logo=proxmox&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Ready_for_use-blue?style=flat-square)
+![Bash](https://img.shields.io/badge/Language-Bash-white?style=flat-square&logo=gnu-bash&logoColor=white)
+![Proxmox](https://img.shields.io/badge/Platform-Proxmox_VE-blue?style=flat-square&logo=proxmox&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Ready_for_use-red?style=flat-square)
 
 > [!WARNING]
 > На экзамене присутствует внешняя комиссия. Использование скриптов автоматизации может быть расценено как нарушение правил и привести к отстранению от экзамена.
